@@ -1,0 +1,48 @@
+<section class="min-h-screen bg-[#f3e9ff] p-3 sm:p-6">
+  <div class="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-7xl overflow-hidden rounded-[28px] border border-[#e7dcff] bg-white shadow-[0_16px_48px_rgba(143,97,201,0.24)] lg:grid-cols-[260px_1fr]">
+    <aside class="bg-gradient-to-b from-[#005e73] via-[#117e6e] to-[#57be45] p-5 text-white sm:p-6">
+      <div class="mb-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/80">Concert Ticketing</p>
+        <h1 class="mt-2 text-2xl font-black">Back Office</h1>
+      </div>
+
+      <nav class="space-y-2">
+        @for (item of navItems; track item.path) {
+          <a
+            [routerLink]="item.path"
+            routerLinkActive="bg-white text-black!"
+            [routerLinkActiveOptions]="{ exact: item.path === '/management' }"
+            class="block rounded-xl px-4 py-3 text-sm font-semibold text-white/90 transition hover:bg-white/15"
+          >
+            {{ item.label }}
+          </a>
+        }
+      </nav>
+
+      <div class="mt-10 rounded-2xl border border-white/30 bg-white/10 p-4 backdrop-blur">
+        <p class="text-xs uppercase tracking-[0.14em] text-white/80">Status</p>
+        <p class="mt-1 text-lg font-bold">Ventes en ligne</p>
+        <p class="mt-2 text-sm text-white/85">Toutes les passerelles de paiement sont operationnelles.</p>
+      </div>
+    </aside>
+
+    <main class="bg-[#f8fbff] p-4 sm:p-6 lg:p-8">
+      <header class="mb-6 flex flex-col gap-4 rounded-2xl border border-[#d7eaf1] bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#637381]">Espace de Gestion</p>
+          <h2 class="mt-1 text-2xl font-black text-[#1f2937]">Billetterie Concerts</h2>
+        </div>
+        <div class="flex items-center gap-3">
+          <input
+            type="search"
+            placeholder="Rechercher evenement, artiste..."
+            class="w-full rounded-full border border-[#d5e7ee] bg-white px-4 py-2 text-sm text-[#1f2937] outline-none placeholder:text-[#93a3ad] focus:border-[#5ea8b7] sm:w-72"
+          />
+          <button class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white shadow">+ Nouveau concert</button>
+        </div>
+      </header>
+
+      <router-outlet />
+    </main>
+  </div>
+</section>

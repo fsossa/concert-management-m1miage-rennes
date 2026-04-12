@@ -1,0 +1,137 @@
+<section class="min-h-screen bg-[#f3e9ff] px-4 py-8 sm:px-6 sm:py-12">
+  <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center justify-center">
+    <div class="grid w-full overflow-hidden rounded-[28px] border border-[#e9ddff] bg-white shadow-[0_12px_45px_rgba(166,121,236,0.3)] lg:grid-cols-[1.55fr_1fr]">
+      <section class="p-6 sm:p-10 lg:p-12">
+        <div class="mx-auto w-full max-w-md">
+          <div class="mb-6 flex rounded-full border border-[#d8ebf3] bg-[#f7fcff] p-1 text-sm font-semibold text-[#165f69]">
+            <button
+              type="button"
+              (click)="setTab('login')"
+              [attr.aria-selected]="activeTab() === 'login'"
+              class="w-1/2 rounded-full px-4 py-2 transition"
+              [class.bg-gradient-to-b]="activeTab() === 'login'"
+              [class.from-[#006a7b]]="activeTab() === 'login'"
+              [class.to-[#58bf45]]="activeTab() === 'login'"
+              [class.text-white]="activeTab() === 'login'"
+              [class.text-[#2d6c75]]="activeTab() !== 'login'"
+            >
+              Login
+            </button>
+            <button
+              type="button"
+              (click)="setTab('register')"
+              [attr.aria-selected]="activeTab() === 'register'"
+              class="w-1/2 rounded-full px-4 py-2 transition"
+              [class.bg-gradient-to-b]="activeTab() === 'register'"
+              [class.from-[#006a7b]]="activeTab() === 'register'"
+              [class.to-[#58bf45]]="activeTab() === 'register'"
+              [class.text-white]="activeTab() === 'register'"
+              [class.text-[#2d6c75]]="activeTab() !== 'register'"
+            >
+              Register
+            </button>
+          </div>
+
+          @if (activeTab() === 'login') {
+            <div class="mb-6 text-center sm:text-left">
+              <h1 class="text-5xl font-black text-[#23252b]">Hello!</h1>
+              <p class="mt-2 text-xl text-[#4e545f]">Sign into your account</p>
+            </div>
+
+            <form class="space-y-4" autocomplete="on">
+              <input
+                id="loginEmail"
+                type="email"
+                placeholder="Email"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <input
+                id="loginPassword"
+                type="password"
+                placeholder="Password"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <div class="flex items-center justify-between px-1 text-xs text-[#6b7280]">
+                <label class="inline-flex items-center gap-2">
+                  <input type="checkbox" class="h-3.5 w-3.5 rounded border-[#c9dce4]" />
+                  Remember me
+                </label>
+                <a href="#" class="font-medium text-[#6c7780] hover:text-[#006a7b]">Forgot password?</a>
+              </div>
+              <button
+                type="button"
+                (click)="login()"
+                class="w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-6 py-3 text-2xl font-semibold text-white shadow-md transition hover:brightness-105"
+              >
+                Login
+              </button>
+              <a
+                routerLink="/management"
+                class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
+              >
+                Acceder a l'espace de gestion
+              </a>
+            </form>
+          } @else {
+            <div class="mb-6 text-center sm:text-left">
+              <h1 class="text-5xl font-black text-[#23252b]">Create Account</h1>
+              <p class="mt-2 text-xl text-[#4e545f]">Join the concert platform</p>
+            </div>
+
+            <form class="space-y-4" autocomplete="on">
+              <input
+                id="registerName"
+                type="text"
+                placeholder="Full Name"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <input
+                id="registerEmail"
+                type="email"
+                placeholder="Email"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <input
+                id="registerPassword"
+                type="password"
+                placeholder="Password"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <button
+                type="submit"
+                class="w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-6 py-3 text-2xl font-semibold text-white shadow-md transition hover:brightness-105"
+              >
+                Register
+              </button>
+              <a
+                routerLink="/management"
+                class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
+              >
+                Voir l'espace de gestion
+              </a>
+            </form>
+          }
+        </div>
+      </section>
+
+      <aside class="hidden min-h-full flex-col justify-center bg-gradient-to-b from-[#005e73] via-[#15836a] to-[#59bf45] p-10 text-white lg:flex">
+        <div class="mx-auto w-full max-w-xs text-center">
+          <h2 class="text-5xl font-black leading-tight">
+            @if (activeTab() === 'login') {
+              Welcome
+              <br />
+              Back!
+            } @else {
+              Join
+              <br />
+              Us!
+            }
+          </h2>
+          <p class="mt-6 text-sm leading-6 text-white/90">
+            Gere tes evenements, artistes et reservations sur une plateforme claire et rapide, pensee pour la gestion de concerts.
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
