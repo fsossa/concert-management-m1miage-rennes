@@ -1,41 +1,68 @@
 import { Routes } from '@angular/router';
 
 import { AuthComponent } from './auth-component/auth-component';
-import { ManagementDashboardComponent } from './management-dashboard/management-dashboard';
-import { ManagementLayoutComponent } from './management-layout/management-layout';
-import { ManagementPlaceholderComponent } from './management-placeholder/management-placeholder';
+import { ConcertDetailComponent } from './concert-detail/concert-detail';
+import { ConcertSearchComponent } from './concert-search/concert-search';
+import { CustomerProfileComponent } from './customer-profile/customer-profile';
+import { HomeLandingComponent } from './home-landing/home-landing';
+import { OrganizeDashboardComponent } from './organize-dashboard/organize-dashboard';
+import { OrganizeLayoutComponent } from './organize-layout/organize-layout';
+import { OrganizePlaceholderComponent } from './organize-placeholder/organize-placeholder';
+import { PublicLayoutComponent } from './public-layout/public-layout';
 
 export const routes: Routes = [
   {
     path: '',
-    component: AuthComponent
-  },
-  {
-    path: 'management',
-    component: ManagementLayoutComponent,
+    component: PublicLayoutComponent,
     children: [
       {
         path: '',
-        component: ManagementDashboardComponent
+        component: HomeLandingComponent
+      },
+      {
+        path: 'search',
+        component: ConcertSearchComponent
+      },
+      {
+        path: 'concert/:id',
+        component: ConcertDetailComponent
+      },
+      {
+        path: 'profile',
+        component: CustomerProfileComponent
+      }
+    ]
+  },
+  {
+    path: 'auth',
+    component: AuthComponent
+  },
+  {
+    path: 'organize',
+    component: OrganizeLayoutComponent,
+    children: [
+      {
+        path: '',
+        component: OrganizeDashboardComponent
       },
       {
         path: 'events',
-        component: ManagementPlaceholderComponent,
+        component: OrganizePlaceholderComponent,
         data: { title: 'Gestion des Concerts' }
       },
       {
         path: 'tickets',
-        component: ManagementPlaceholderComponent,
+        component: OrganizePlaceholderComponent,
         data: { title: 'Gestion des Billets' }
       },
       {
         path: 'artists',
-        component: ManagementPlaceholderComponent,
+        component: OrganizePlaceholderComponent,
         data: { title: 'Gestion des Artistes' }
       },
       {
         path: 'reports',
-        component: ManagementPlaceholderComponent,
+        component: OrganizePlaceholderComponent,
         data: { title: 'Rapports & Statistiques' }
       }
     ]
