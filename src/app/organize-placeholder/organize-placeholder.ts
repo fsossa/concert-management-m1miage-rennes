@@ -2,11 +2,11 @@ import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-management-placeholder',
+  selector: 'app-organize-placeholder',
   standalone: true,
-  templateUrl: './management-placeholder.html'
+  templateUrl: './organize-placeholder.html'
 })
-export class ManagementPlaceholderComponent {
+export class OrganizePlaceholderComponent {
   private readonly route = inject(ActivatedRoute);
 
   protected get sectionTitle(): string {

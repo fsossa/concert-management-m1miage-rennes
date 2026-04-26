@@ -1,0 +1,37 @@
+<section class="min-h-screen bg-[#f3e9ff] p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-6xl space-y-6">
+    <article class="rounded-3xl border border-[#e2d5ff] bg-white p-6 shadow-[0_14px_40px_rgba(143,97,201,0.18)]">
+      <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#657585]">Detail concert</p>
+      <h1 class="mt-2 text-3xl font-black text-[#1f2b3a]">Concert #{{ concertId }}</h1>
+      <p class="mt-2 text-sm text-[#5d7281]">Informations detaillees avec artistes invites et disponibilite des billets.</p>
+    </article>
+
+    <section class="grid gap-6 lg:grid-cols-2">
+      <article class="rounded-2xl border border-[#d5e8ef] bg-white p-5">
+        <h2 class="text-xl font-black text-[#213349]">Artistes invites</h2>
+        <ul class="mt-3 space-y-2">
+          @for (artist of invitedArtists; track artist) {
+            <li class="rounded-xl bg-[#f8fcff] px-3 py-2 text-sm font-semibold text-[#3b5567]">{{ artist }}</li>
+          }
+        </ul>
+      </article>
+
+      <article class="rounded-2xl border border-[#d5e8ef] bg-white p-5">
+        <h2 class="text-xl font-black text-[#213349]">Tickets disponibles</h2>
+        <div class="mt-3 space-y-2">
+          @for (ticket of tickets; track ticket.type) {
+            <div class="flex items-center justify-between rounded-xl bg-[#f8fcff] px-3 py-2 text-sm">
+              <div>
+                <p class="font-semibold text-[#2e495d]">{{ ticket.type }}</p>
+                <p class="text-[#6b8190]">{{ ticket.price }}</p>
+              </div>
+              <span class="rounded-full bg-[#eaf9ed] px-2.5 py-1 text-xs font-semibold text-[#1e8a63]">{{ ticket.left }} restants</span>
+            </div>
+          }
+        </div>
+      </article>
+    </section>
+
+    <a routerLink="/" class="inline-block rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]">Retour accueil</a>
+  </div>
+</section>

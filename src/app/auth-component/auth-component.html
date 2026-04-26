@@ -66,7 +66,7 @@
                 Login
               </button>
               <a
-                routerLink="/management"
+                routerLink="/organize"
                 class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
               >
                 Acceder a l'espace de gestion
@@ -79,6 +79,36 @@
             </div>
 
             <form class="space-y-4" autocomplete="on">
+              <div>
+                <p class="mb-2 text-sm font-semibold text-[#2d6c75]">Profil</p>
+                <div class="flex rounded-full border border-[#d8ebf3] bg-[#f7fcff] p-1 text-sm font-semibold text-[#165f69]">
+                  <button
+                    type="button"
+                    (click)="selectProfile('CUSTOMER')"
+                    class="w-1/2 rounded-full px-3 py-2 transition"
+                    [class.bg-gradient-to-b]="selectedProfile() === 'CUSTOMER'"
+                    [class.from-[#006a7b]]="selectedProfile() === 'CUSTOMER'"
+                    [class.to-[#58bf45]]="selectedProfile() === 'CUSTOMER'"
+                    [class.text-white]="selectedProfile() === 'CUSTOMER'"
+                    [class.text-[#2d6c75]]="selectedProfile() !== 'CUSTOMER'"
+                  >
+                    CUSTOMER
+                  </button>
+                  <button
+                    type="button"
+                    (click)="selectProfile('ORGANIZER')"
+                    class="w-1/2 rounded-full px-3 py-2 transition"
+                    [class.bg-gradient-to-b]="selectedProfile() === 'ORGANIZER'"
+                    [class.from-[#006a7b]]="selectedProfile() === 'ORGANIZER'"
+                    [class.to-[#58bf45]]="selectedProfile() === 'ORGANIZER'"
+                    [class.text-white]="selectedProfile() === 'ORGANIZER'"
+                    [class.text-[#2d6c75]]="selectedProfile() !== 'ORGANIZER'"
+                  >
+                    ORGANIZER
+                  </button>
+                </div>
+              </div>
+
               <input
                 id="registerName"
                 type="text"
@@ -104,7 +134,7 @@
                 Register
               </button>
               <a
-                routerLink="/management"
+                routerLink="/organize"
                 class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
               >
                 Voir l'espace de gestion

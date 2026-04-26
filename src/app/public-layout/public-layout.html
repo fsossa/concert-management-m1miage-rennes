@@ -1,0 +1,40 @@
+<section class="min-h-screen bg-[#f3e9ff] bg-[url('/golden-frame-blue-background.jpg')] bg-cover bg-center bg-no-repeat p-4 sm:p-6 lg:p-8">
+  <div class="mx-auto max-w-7xl">
+    <header class="rounded-3xl border border-[#e2d5ff] bg-white px-5 py-4 shadow-[0_14px_40px_rgba(143,97,201,0.18)] sm:px-8 sm:py-6">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-[#617082]">Concert Tickets</p>
+          <a routerLink="/" class="inline-block">
+            <h1 class="mt-1 text-2xl font-black text-[#1f2b3a] transition hover:text-[#0d5f6e] sm:text-4xl">Decouvre ton prochain concert</h1>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button
+            type="button"
+            (click)="goBack()"
+            class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+          >
+            Retour
+          </button>
+
+          @for (item of navItems; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="ring-2 ring-[#7bc1ce]/70"
+              [class]="item.variant === 'primary'
+                ? 'rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white'
+                : 'rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]'"
+            >
+              {{ item.label }}
+            </a>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="mt-8">
+      <router-outlet />
+    </main>
+  </div>
+</section>
