@@ -4,11 +4,15 @@ import { AuthComponent } from './auth-component/auth-component';
 import { ConcertDetailComponent } from './concert-detail/concert-detail';
 import { ConcertSearchComponent } from './concert-search/concert-search';
 import { CustomerProfileComponent } from './customer-profile/customer-profile';
+import { OrganizeArtistsComponent } from './organize-artists/organize-artists';
 import { HomeLandingComponent } from './home-landing/home-landing';
 import { OrganizeDashboardComponent } from './organize-dashboard/organize-dashboard';
+import { OrganizeEventsComponent } from './organize-events/organize-events';
 import { OrganizeLayoutComponent } from './organize-layout/organize-layout';
 import { OrganizePlaceholderComponent } from './organize-placeholder/organize-placeholder';
+import { OrganizeTicketsComponent } from './organize-tickets/organize-tickets';
 import { PublicLayoutComponent } from './public-layout/public-layout';
+import { authGuard, organizerGuard } from './core/auth.guard';
 
 export const routes: Routes = [
   {
@@ -29,6 +33,7 @@ export const routes: Routes = [
       },
       {
         path: 'profile',
+        canActivate: [authGuard],
         component: CustomerProfileComponent
       }
     ]
@@ -39,6 +44,7 @@ export const routes: Routes = [
   },
   {
     path: 'organize',
+    canActivate: [organizerGuard],
     component: OrganizeLayoutComponent,
     children: [
       {
@@ -47,18 +53,15 @@ export const routes: Routes = [
       },
       {
         path: 'events',
-        component: OrganizePlaceholderComponent,
-        data: { title: 'Gestion des Concerts' }
+        component: OrganizeEventsComponent
       },
       {
         path: 'tickets',
-        component: OrganizePlaceholderComponent,
-        data: { title: 'Gestion des Billets' }
+        component: OrganizeTicketsComponent
       },
       {
         path: 'artists',
-        component: OrganizePlaceholderComponent,
-        data: { title: 'Gestion des Artistes' }
+        component: OrganizeArtistsComponent
       },
       {
         path: 'reports',

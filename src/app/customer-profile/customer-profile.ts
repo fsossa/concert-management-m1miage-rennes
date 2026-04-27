@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+﻿import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -15,6 +15,7 @@ import { TicketResponse, UserResponse } from '../core/api.types';
 })
 export class CustomerProfileComponent {
   private readonly authStore = inject(AuthStoreService);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(BackendApiService);
 
   protected readonly loading = signal(false);
@@ -51,7 +52,7 @@ export class CustomerProfileComponent {
       user: this.api.customerProfile(token),
       tickets: this.api.customerTickets(token)
     })
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ user, tickets }) => {
           this.user.set(user);
@@ -66,3 +67,4 @@ export class CustomerProfileComponent {
       });
   }
 }
+

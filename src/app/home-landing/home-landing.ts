@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -21,6 +21,7 @@ interface HomeConcertCard {
 })
 export class HomeLandingComponent {
   private readonly api = inject(BackendApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -34,7 +35,7 @@ export class HomeLandingComponent {
 
   private loadIncoming(): void {
     this.api.incomingConcerts()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (concerts) => {
           this.incomingConcerts.set(concerts.map((c) => this.toCard(c)));
@@ -49,7 +50,7 @@ export class HomeLandingComponent {
 
   private loadLatest(): void {
     this.api.latestConcerts()
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (concerts) => {
           this.latestConcerts.set(concerts.slice(0, 10).map((c) => this.toCard(c)));
@@ -79,3 +80,4 @@ export class HomeLandingComponent {
     return `${price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
   }
 }
+

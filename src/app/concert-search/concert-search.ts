@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -22,6 +22,7 @@ interface SearchConcertItem {
 })
 export class ConcertSearchComponent {
   private readonly api = inject(BackendApiService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -48,7 +49,7 @@ export class ConcertSearchComponent {
       artistName: this.artistName.trim() || undefined,
       organizerName: this.organizerName.trim() || undefined
     })
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (concerts) => {
           this.results.set(concerts.map((c) => this.toItem(c)));
@@ -76,3 +77,4 @@ export class ConcertSearchComponent {
     return Number.isNaN(date.getTime()) ? raw : date.toLocaleString('fr-FR');
   }
 }
+

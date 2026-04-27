@@ -34,6 +34,41 @@ interface SearchPayload {
   organizerName?: string;
 }
 
+interface CreateConcertPayload {
+  topic: string;
+  date: string;
+  description: string;
+}
+
+interface UpdateConcertPayload {
+  topic?: string;
+  date?: string;
+  description?: string;
+}
+
+interface CreateTicketPayload {
+  title: string;
+  capacity: number;
+  price: number;
+  statut: string;
+  concertId: number;
+}
+
+interface UpdateTicketPayload {
+  title?: string;
+  capacity?: number;
+  price?: number;
+  statut?: string;
+}
+
+interface CreateArtistPayload {
+  name: string;
+}
+
+interface UpdateArtistPayload {
+  name?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BackendApiService {
   private readonly baseUrl = 'http://localhost:8080';
@@ -106,14 +141,68 @@ export class BackendApiService {
     });
   }
 
+  organizerCreateConcert(token: string, payload: CreateConcertPayload): Observable<ConcertResponse> {
+    return this.http.post<ConcertResponse>(`${this.baseUrl}/organise/concerts`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerUpdateConcert(token: string, concertId: number, payload: UpdateConcertPayload): Observable<ConcertResponse> {
+    return this.http.put<ConcertResponse>(`${this.baseUrl}/organise/concerts/${concertId}`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerDeleteConcert(token: string, concertId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/organise/concerts/${concertId}`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
   organizerTickets(token: string): Observable<TicketResponse[]> {
     return this.http.get<TicketResponse[]>(`${this.baseUrl}/organise/tickets/`, {
       headers: this.authHeaders(token)
     });
   }
 
+  organizerCreateTicket(token: string, payload: CreateTicketPayload): Observable<TicketResponse> {
+    return this.http.post<TicketResponse>(`${this.baseUrl}/organise/tickets`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerUpdateTicket(token: string, ticketId: number, payload: UpdateTicketPayload): Observable<TicketResponse> {
+    return this.http.put<TicketResponse>(`${this.baseUrl}/organise/tickets/${ticketId}`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerDeleteTicket(token: string, ticketId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/organise/tickets/${ticketId}`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
   organizerArtists(token: string): Observable<ArtistResponse[]> {
     return this.http.get<ArtistResponse[]>(`${this.baseUrl}/organise/artists/`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerCreateArtistForConcert(token: string, concertId: number, payload: CreateArtistPayload): Observable<ArtistResponse> {
+    return this.http.post<ArtistResponse>(`${this.baseUrl}/organise/artists/concert/${concertId}`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerUpdateArtist(token: string, artistId: number, payload: UpdateArtistPayload): Observable<ArtistResponse> {
+    return this.http.put<ArtistResponse>(`${this.baseUrl}/organise/artists/${artistId}`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerUnlinkArtistFromConcert(token: string, artistId: number, concertId: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/organise/artists/${artistId}/concert/${concertId}`, {
       headers: this.authHeaders(token)
     });
   }

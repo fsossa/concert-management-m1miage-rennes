@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+﻿import { Component, DestroyRef, inject } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { signal } from '@angular/core';
@@ -20,6 +20,7 @@ interface TicketItem {
 })
 export class ConcertDetailComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(BackendApiService);
 
   protected readonly loading = signal(true);
@@ -37,7 +38,7 @@ export class ConcertDetailComponent {
     }
 
     this.api.concertById(id)
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (concert) => {
           this.concert.set(concert);
@@ -58,3 +59,4 @@ export class ConcertDetailComponent {
       });
   }
 }
+
