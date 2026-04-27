@@ -2,7 +2,15 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-import { AuthTokenResponse, ConcertResponse, TicketResponse, UserResponse } from './api.types';
+import {
+  ArtistResponse,
+  AuthTokenResponse,
+  ConcertResponse,
+  OrganizerDashboardResponse,
+  OrganizerDashboardStatsResponse,
+  TicketResponse,
+  UserResponse
+} from './api.types';
 
 interface LoginPayload {
   email: string;
@@ -82,6 +90,36 @@ export class BackendApiService {
 
   customerTickets(token: string): Observable<TicketResponse[]> {
     return this.http.get<TicketResponse[]>(`${this.baseUrl}/api/custom/mytickets`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerDashboard(token: string): Observable<OrganizerDashboardResponse> {
+    return this.http.get<OrganizerDashboardResponse>(`${this.baseUrl}/organise/dashboard`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerConcerts(token: string): Observable<ConcertResponse[]> {
+    return this.http.get<ConcertResponse[]>(`${this.baseUrl}/organise/concerts/`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerTickets(token: string): Observable<TicketResponse[]> {
+    return this.http.get<TicketResponse[]>(`${this.baseUrl}/organise/tickets/`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerArtists(token: string): Observable<ArtistResponse[]> {
+    return this.http.get<ArtistResponse[]>(`${this.baseUrl}/organise/artists/`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerSalesStats(token: string): Observable<OrganizerDashboardStatsResponse> {
+    return this.http.get<OrganizerDashboardStatsResponse>(`${this.baseUrl}/organise/tickets/stats/sales`, {
       headers: this.authHeaders(token)
     });
   }

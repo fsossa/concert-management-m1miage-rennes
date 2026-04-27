@@ -1,6 +1,14 @@
-<div class="space-y-6">
+﻿<div class="space-y-6">
+  @if (error()) {
+    <p class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{{ error() }}</p>
+  }
+
   <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    @for (kpi of kpis; track kpi.label) {
+    @if (loading()) {
+      <p class="text-sm text-[#5d7281]">Chargement du dashboard...</p>
+    }
+
+    @for (kpi of kpis(); track kpi.label) {
       <article class="rounded-2xl border border-[#d6e8f0] bg-white p-4 shadow-sm">
         <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#6b7a86]">{{ kpi.label }}</p>
         <p class="mt-2 text-3xl font-black text-[#203042]">{{ kpi.value }}</p>
@@ -13,7 +21,7 @@
     <article class="rounded-2xl border border-[#d6e8f0] bg-white p-5 shadow-sm">
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-black text-[#1f2f42]">Concerts a venir</h3>
-        <a href="#" class="text-sm font-semibold text-[#006a7b] hover:text-[#58bf45]">Voir tout</a>
+        <span class="text-sm font-semibold text-[#006a7b]">{{ upcomingConcerts().length }}</span>
       </div>
 
       <div class="overflow-x-auto">
@@ -27,7 +35,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (concert of upcomingConcerts; track concert.name) {
+            @for (concert of upcomingConcerts(); track concert.name) {
               <tr class="border-t border-[#edf3f6]">
                 <td class="px-2 py-3 font-semibold text-[#223448]">{{ concert.name }}</td>
                 <td class="px-2 py-3 text-[#556472]">{{ concert.venue }}</td>
@@ -54,8 +62,8 @@
 
       <div class="rounded-2xl border border-[#d6e8f0] bg-gradient-to-b from-[#00667a] to-[#58bf45] p-5 text-white shadow-sm">
         <p class="text-xs font-semibold uppercase tracking-[0.12em] text-white/80">Objectif Mensuel</p>
-        <p class="mt-2 text-3xl font-black">72%</p>
-        <p class="mt-1 text-sm text-white/90">de ton objectif de ventes billets atteint.</p>
+        <p class="mt-2 text-3xl font-black">Dashboard live</p>
+        <p class="mt-1 text-sm text-white/90">Les indicateurs sont synchronises avec l'API organize.</p>
       </div>
     </article>
   </section>

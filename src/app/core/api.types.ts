@@ -38,3 +38,27 @@ export interface UserResponse {
   email: string;
   role: UserRole;
 }
+
+export interface ArtistResponse {
+  id: number;
+  name: string;
+  concertIds: number[];
+}
+
+export interface OrganizerDashboardStatsResponse {
+  totalConcerts: number;
+  upcomingConcerts: number;
+  soldOutConcerts: number;
+  ticketsSold: number;
+  uniqueCustomers: number;
+  ticketRevenue: number;
+  averageBasket: number;
+  ticketsRemaining: number;
+  sellThroughRate: number;
+}
+
+export interface OrganizerDashboardResponse {
+  stats: OrganizerDashboardStatsResponse;
+  upcomingConcerts: ConcertResponse[];
+  quickActions: string[];
+}
