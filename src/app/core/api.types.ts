@@ -14,12 +14,17 @@ export interface ConcertResponse {
   organizerId: number | null;
   ticketIds: number[];
   artistIds: number[];
+  tickets?: TicketResponse[];
+  minPrice?: number;
+  minimumPrice?: number;
+  ticketPrices?: number[];
 }
 
 export interface TicketResponse {
   id: number;
   title: string;
   capacity: number;
+  price: number;
   statut: string;
   concertId: number | null;
   customerIds: number[];

@@ -9,7 +9,7 @@ interface HomeConcertCard {
   id: number;
   title: string;
   date: string;
-  venue: string;
+  topic: string;
   price: string;
 }
 
@@ -63,15 +63,19 @@ export class HomeLandingComponent {
   private toCard(concert: ConcertResponse): HomeConcertCard {
     return {
       id: concert.id,
-      title: concert.topic || 'Concert',
+      title: concert.description?.trim() ? concert.description : `Concert #${concert.id}`,
       date: this.formatDate(concert.date),
-      venue: `Organizer #${concert.organizerId ?? 'N/A'}`,
-      price: `Tickets: ${concert.ticketIds.length}`
+      topic: concert.topic || 'N/A',
+      price: `A partir de ${this.formatPrice(concert.minPrice ?? 0)}`
     };
   }
 
   private formatDate(raw: string): string {
     const date = new Date(raw);
     return Number.isNaN(date.getTime()) ? raw : date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  private formatPrice(price: number): string {
+    return `${price.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
   }
 }

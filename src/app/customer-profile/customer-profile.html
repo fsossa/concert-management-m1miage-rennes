@@ -20,6 +20,7 @@
         @for (ticket of purchasedTickets(); track ticket.id) {
           <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-4">
             <h3 class="font-semibold text-[#2e495d]">{{ ticket.title }}</h3>
+            <p class="text-sm text-[#6b8190]">Prix: {{ ticket.price }} EUR</p>
             <p class="text-sm text-[#6b8190]">Statut: {{ ticket.statut }}</p>
             <p class="text-sm text-[#6b8190]">Capacite restante: {{ ticket.capacity }}</p>
           </article>
