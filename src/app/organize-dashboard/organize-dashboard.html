@@ -68,7 +68,7 @@
         <div class="mt-4 space-y-3">
           <button
             type="button"
-            (click)="goToCreateConcert()"
+            (click)="openCreateModal()"
             class="w-full rounded-xl bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white"
           >
             Creer un concert
@@ -98,3 +98,73 @@
     </article>
   </section>
 </div>
+
+@if (showCreateModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+    <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-[#d6e8f0] bg-white p-6 shadow-2xl">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-xl font-black text-[#1f2f42]">Nouveau concert (avec artistes et tickets)</h3>
+        <button type="button" (click)="closeCreateModal()" class="rounded-lg border border-[#cde1e9] px-3 py-1 text-sm font-semibold text-[#24566a]">Fermer</button>
+      </div>
+
+      @if (modalError()) {
+        <p class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{{ modalError() }}</p>
+      }
+
+      <div class="space-y-5">
+        <section class="grid gap-3 md:grid-cols-3">
+          <input type="text" [(ngModel)]="concertTopic" placeholder="Topic concert" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+          <input type="datetime-local" [(ngModel)]="concertDate" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+          <input type="text" [(ngModel)]="concertDescription" placeholder="Description" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+        </section>
+
+        <section class="rounded-xl border border-[#d6e8f0] p-4">
+          <h4 class="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-[#5f6f7c]">Artistes</h4>
+          <div class="flex gap-2">
+            <input type="text" [(ngModel)]="artistName" placeholder="Nom artiste" class="flex-1 rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+            <button type="button" (click)="addArtistDraft()" class="rounded-xl bg-[#0c6b79] px-3 py-2 text-sm font-semibold text-white">Ajouter</button>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            @for (artist of artistDrafts(); track artist; let i = $index) {
+              <span class="inline-flex items-center gap-2 rounded-full bg-[#eef7fb] px-3 py-1 text-sm text-[#24566a]">
+                {{ artist }}
+                <button type="button" (click)="removeArtistDraft(i)" class="text-red-600">x</button>
+              </span>
+            }
+          </div>
+        </section>
+
+        <section class="rounded-xl border border-[#d6e8f0] p-4">
+          <h4 class="mb-3 text-sm font-bold uppercase tracking-[0.1em] text-[#5f6f7c]">Tickets</h4>
+          <div class="grid gap-2 md:grid-cols-5">
+            <input type="text" [(ngModel)]="ticketTitle" placeholder="Titre" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+            <input type="number" [(ngModel)]="ticketCapacity" min="0" placeholder="Capacite" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+            <input type="number" [(ngModel)]="ticketPrice" min="0" step="0.01" placeholder="Prix" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+            <select [(ngModel)]="ticketStatut" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]">
+              <option value="available">available</option>
+              <option value="soldout">soldout</option>
+              <option value="inactive">inactive</option>
+            </select>
+            <button type="button" (click)="addTicketDraft()" class="rounded-xl bg-[#0c6b79] px-3 py-2 text-sm font-semibold text-white">Ajouter</button>
+          </div>
+
+          <div class="mt-3 space-y-2">
+            @for (ticket of ticketDrafts(); track ticket.title + $index; let i = $index) {
+              <div class="flex items-center justify-between rounded-xl bg-[#f8fcff] px-3 py-2 text-sm">
+                <span>{{ ticket.title }} - {{ ticket.capacity }} places - {{ ticket.price }} EUR - {{ ticket.statut }}</span>
+                <button type="button" (click)="removeTicketDraft(i)" class="text-red-600">Supprimer</button>
+              </div>
+            }
+          </div>
+        </section>
+
+        <div class="flex justify-end gap-2">
+          <button type="button" (click)="closeCreateModal()" class="rounded-xl border border-[#cde1e9] px-4 py-2 text-sm font-semibold text-[#24566a]">Annuler</button>
+          <button type="button" [disabled]="creating()" (click)="submitCreateConcert()" class="rounded-xl bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white">
+            {{ creating() ? 'Creation...' : 'Creer tout' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

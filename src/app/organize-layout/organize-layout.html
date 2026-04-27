@@ -1,6 +1,6 @@
 <section class="min-h-screen bg-[#f3e9ff] p-3 sm:p-6">
   <div class="mx-auto grid min-h-[calc(100vh-1.5rem)] max-w-7xl overflow-hidden rounded-[28px] border border-[#e7dcff] bg-white shadow-[0_16px_48px_rgba(143,97,201,0.24)] lg:grid-cols-[260px_1fr]">
-    <aside class="bg-gradient-to-b from-[#005e73] via-[#117e6e] to-[#57be45] p-5 text-white sm:p-6">
+    <aside class="flex flex-col bg-gradient-to-b from-[#005e73] via-[#117e6e] to-[#57be45] p-5 text-white sm:p-6">
       <div class="mb-8">
         <p class="text-xs font-semibold uppercase tracking-[0.22em] text-white/80">Concert Ticketing</p>
         <h1 class="mt-2 text-2xl font-black">Back Office</h1>
@@ -24,6 +24,23 @@
         <p class="mt-1 text-lg font-bold">Ventes en ligne</p>
         <p class="mt-2 text-sm text-white/85">Toutes les passerelles de paiement sont operationnelles.</p>
       </div>
+
+      <div class="mt-auto pt-6 space-y-2">
+        <button
+          type="button"
+          (click)="goHome()"
+          class="w-full rounded-xl border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+        >
+          Accueil
+        </button>
+        <button
+          type="button"
+          (click)="logout()"
+          class="w-full rounded-xl border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
+        >
+          Deconnexion
+        </button>
+      </div>
     </aside>
 
     <main class="bg-[#f8fbff] p-4 sm:p-6 lg:p-8">
@@ -38,12 +55,13 @@
             placeholder="Rechercher evenement, artiste..."
             class="w-full rounded-full border border-[#d5e7ee] bg-white px-4 py-2 text-sm text-[#1f2937] outline-none placeholder:text-[#93a3ad] focus:border-[#5ea8b7] sm:w-72"
           />
-          <a
-            routerLink="/organize/events"
+          <button
+            type="button"
+            (click)="openCreateConcertModal()"
             class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white shadow"
           >
             + Nouveau concert
-          </a>
+          </button>
         </div>
       </header>
 

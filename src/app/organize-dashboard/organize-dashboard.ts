@@ -1,7 +1,7 @@
 ﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { AuthStoreService } from '../core/auth-store.service';
@@ -38,6 +38,7 @@ export class OrganizeDashboardComponent {
   private readonly api = inject(BackendApiService);
   private readonly authStore = inject(AuthStoreService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly loading = signal(true);
@@ -64,6 +65,20 @@ export class OrganizeDashboardComponent {
   protected readonly ticketDrafts = signal<TicketDraft[]>([]);
 
   constructor() {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        if (params.get('create') === '1') {
+          this.openCreateModal();
+          void this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { create: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+          });
+        }
+      });
+
     this.loadDashboard();
   }
 
