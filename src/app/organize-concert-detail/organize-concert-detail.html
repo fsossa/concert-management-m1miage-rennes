@@ -1,0 +1,118 @@
+<section class="space-y-6">
+  <a
+    routerLink="/organize/events"
+    class="inline-flex items-center rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#245f6d]"
+  >
+    Retour aux concerts
+  </a>
+
+  @if (error()) {
+    <p class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <article class="rounded-2xl border border-[#d6e8f0] bg-white p-6 shadow-sm">
+      <p class="text-sm text-[#5f6f7c]">Chargement du detail du concert...</p>
+    </article>
+  } @else if (concert()) {
+    <article class="rounded-2xl border border-[#d6e8f0] bg-white p-6 shadow-sm">
+      <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#6b7a86]">Detail concert</p>
+      <h2 class="mt-1 text-3xl font-black text-[#1f2f42]">{{ concert()!.topic }}</h2>
+      <p class="mt-2 text-sm text-[#556472]">{{ concert()!.description }}</p>
+      <div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="rounded-xl bg-[#f7fbfe] p-3">
+          <p class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">Date</p>
+          <p class="mt-1 text-sm font-semibold text-[#1f2f42]">{{ formatDate(concert()!.date) }}</p>
+        </div>
+        <div class="rounded-xl bg-[#f7fbfe] p-3">
+          <p class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">Artistes</p>
+          <p class="mt-1 text-sm font-semibold text-[#1f2f42]">{{ artists().length }}</p>
+        </div>
+        <div class="rounded-xl bg-[#f7fbfe] p-3">
+          <p class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">Tickets</p>
+          <p class="mt-1 text-sm font-semibold text-[#1f2f42]">{{ tickets().length }}</p>
+        </div>
+        <div class="rounded-xl bg-[#f7fbfe] p-3">
+          <p class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">Ventes estimees</p>
+          <p class="mt-1 text-sm font-semibold text-[#1f2f42]">{{ formatMoney(totalRevenue()) }} EUR</p>
+        </div>
+      </div>
+    </article>
+
+    <section class="grid gap-6 xl:grid-cols-3">
+      <article class="rounded-2xl border border-[#d6e8f0] bg-white p-5 shadow-sm">
+        <h3 class="text-lg font-black text-[#1f2f42]">Artistes</h3>
+        @if (artists().length === 0) {
+          <p class="mt-3 text-sm text-[#5f6f7c]">Aucun artiste lie a ce concert.</p>
+        } @else {
+          <div class="mt-3 space-y-2">
+            @for (artist of artists(); track artist.id) {
+              <div class="rounded-xl bg-[#f8fcff] px-3 py-2 text-sm font-semibold text-[#2a4d62]">{{ artist.name }}</div>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="rounded-2xl border border-[#d6e8f0] bg-white p-5 shadow-sm xl:col-span-2">
+        <h3 class="text-lg font-black text-[#1f2f42]">Tickets</h3>
+        @if (tickets().length === 0) {
+          <p class="mt-3 text-sm text-[#5f6f7c]">Aucun ticket sur ce concert.</p>
+        } @else {
+          <div class="mt-3 overflow-x-auto">
+            <table class="min-w-full text-left text-sm">
+              <thead class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">
+                <tr>
+                  <th class="px-2 py-2">Titre</th>
+                  <th class="px-2 py-2">Prix</th>
+                  <th class="px-2 py-2">Capacite restante</th>
+                  <th class="px-2 py-2">Statut</th>
+                  <th class="px-2 py-2">Achats</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (ticket of tickets(); track ticket.id) {
+                  <tr class="border-t border-[#edf3f6]">
+                    <td class="px-2 py-3 font-semibold text-[#223448]">{{ ticket.title }}</td>
+                    <td class="px-2 py-3 text-[#556472]">{{ formatMoney(ticket.price) }} EUR</td>
+                    <td class="px-2 py-3 text-[#556472]">{{ ticket.capacity }}</td>
+                    <td class="px-2 py-3 text-[#556472]">{{ ticket.statut }}</td>
+                    <td class="px-2 py-3 text-[#556472]">{{ ticket.customerIds.length }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </article>
+    </section>
+
+    <article class="rounded-2xl border border-[#d6e8f0] bg-white p-5 shadow-sm">
+      <h3 class="text-lg font-black text-[#1f2f42]">Ventes clients</h3>
+      @if (customers().length === 0) {
+        <p class="mt-3 text-sm text-[#5f6f7c]">Aucun client n'a encore achete de ticket sur ce concert.</p>
+      } @else {
+        <div class="mt-3 overflow-x-auto">
+          <table class="min-w-full text-left text-sm">
+            <thead class="text-xs uppercase tracking-[0.12em] text-[#6b7a86]">
+              <tr>
+                <th class="px-2 py-2">Client</th>
+                <th class="px-2 py-2">Email</th>
+                <th class="px-2 py-2">Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (customer of customers(); track customer.id) {
+                <tr class="border-t border-[#edf3f6]">
+                  <td class="px-2 py-3 font-semibold text-[#223448]">{{ customerFullName(customer) }}</td>
+                  <td class="px-2 py-3 text-[#556472]">{{ customer.email }}</td>
+                  <td class="px-2 py-3 text-[#556472]">{{ customer.role }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </article>
+  }
+</section>
+

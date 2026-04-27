@@ -7,6 +7,7 @@ import { CustomerProfileComponent } from './customer-profile/customer-profile';
 import { OrganizeArtistsComponent } from './organize-artists/organize-artists';
 import { HomeLandingComponent } from './home-landing/home-landing';
 import { OrganizeDashboardComponent } from './organize-dashboard/organize-dashboard';
+import { OrganizeConcertDetailComponent } from './organize-concert-detail/organize-concert-detail';
 import { OrganizeEventsComponent } from './organize-events/organize-events';
 import { OrganizeLayoutComponent } from './organize-layout/organize-layout';
 import { OrganizePlaceholderComponent } from './organize-placeholder/organize-placeholder';
@@ -54,6 +55,10 @@ export const routes: Routes = [
       {
         path: 'events',
         component: OrganizeEventsComponent
+      },
+      {
+        path: 'concert/:id',
+        component: OrganizeConcertDetailComponent
       },
       {
         path: 'tickets',

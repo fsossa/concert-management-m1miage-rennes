@@ -1,12 +1,12 @@
 ﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
-import { ConcertResponse } from '../core/api.types';
+import { ConcertResponse, TicketResponse, TicketSaleHistoryItemResponse } from '../core/api.types';
 
 interface DashboardKpi {
   label: string;
@@ -15,6 +15,7 @@ interface DashboardKpi {
 }
 
 interface DashboardConcertRow {
+  id: number;
   name: string;
   venue: string;
   date: string;
@@ -28,10 +29,22 @@ interface TicketDraft {
   statut: string;
 }
 
+interface TicketSalesHistoryRow {
+  ticketId: number;
+  ticketTitle: string;
+  concertId: number | null;
+  concertTopic: string;
+  concertDate: string;
+  ticketPrice: number;
+  soldCount: number;
+  revenue: number;
+  statut: string;
+}
+
 @Component({
   selector: 'app-organize-dashboard',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './organize-dashboard.html'
 })
 export class OrganizeDashboardComponent {
@@ -48,6 +61,8 @@ export class OrganizeDashboardComponent {
   protected readonly toast = signal<{ type: 'success' | 'error'; message: string } | null>(null);
   protected readonly kpis = signal<DashboardKpi[]>([]);
   protected readonly upcomingConcerts = signal<DashboardConcertRow[]>([]);
+  protected readonly ticketSalesHistory = signal<TicketSalesHistoryRow[]>([]);
+  protected readonly latestSalesHistory = signal<TicketSaleHistoryItemResponse[]>([]);
 
   protected readonly showCreateModal = signal(false);
 
@@ -222,10 +237,15 @@ export class OrganizeDashboardComponent {
 
     this.loading.set(true);
 
-    this.api.organizerDashboard(token)
+    forkJoin({
+      dashboard: this.api.organizerDashboard(token),
+      tickets: this.api.organizerTickets(token),
+      concerts: this.api.organizerConcerts(token),
+      latestSales: this.api.organizerLatestSalesHistory(token, 50)
+    })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (dashboard) => {
+        next: ({ dashboard, tickets, concerts, latestSales }) => {
           const stats = dashboard.stats;
           this.kpis.set([
             { label: 'BILLETS VENDUS', value: this.formatInt(stats.ticketsSold), detail: `${stats.sellThroughRate.toFixed(1)}% taux de vente` },
@@ -235,10 +255,14 @@ export class OrganizeDashboardComponent {
           ]);
 
           this.upcomingConcerts.set(dashboard.upcomingConcerts.map((concert) => this.toConcertRow(concert)));
+          this.ticketSalesHistory.set(this.toTicketSalesRows(tickets, concerts));
+          this.latestSalesHistory.set(latestSales);
           this.loading.set(false);
         },
         error: () => {
           this.error.set('Impossible de charger le dashboard organize.');
+          this.ticketSalesHistory.set([]);
+          this.latestSalesHistory.set([]);
           this.loading.set(false);
         }
       });
@@ -246,6 +270,7 @@ export class OrganizeDashboardComponent {
 
   private toConcertRow(concert: ConcertResponse): DashboardConcertRow {
     return {
+      id: concert.id,
       name: concert.topic || `Concert #${concert.id}`,
       venue: `Organizer #${concert.organizerId ?? 'N/A'}`,
       date: this.formatDate(concert.date),
@@ -276,12 +301,67 @@ export class OrganizeDashboardComponent {
     return Number.isNaN(date.getTime()) ? raw : date.toLocaleDateString('fr-FR');
   }
 
+  protected formatDateTime(raw: string): string {
+    const date = new Date(raw);
+    return Number.isNaN(date.getTime()) ? raw : date.toLocaleString('fr-FR');
+  }
+
+  protected salesTotalTickets(): number {
+    return this.ticketSalesHistory().reduce((sum, row) => sum + row.soldCount, 0);
+  }
+
+  protected salesTotalRevenue(): number {
+    return this.ticketSalesHistory().reduce((sum, row) => sum + row.revenue, 0);
+  }
+
+  protected salesAverageTicketPrice(): number {
+    const totalTickets = this.salesTotalTickets();
+    if (totalTickets === 0) {
+      return 0;
+    }
+
+    return this.salesTotalRevenue() / totalTickets;
+  }
+
+  protected saleCustomerLabel(sale: TicketSaleHistoryItemResponse): string {
+    return sale.customerName?.trim() || `Customer #${sale.customerId ?? 'N/A'}`;
+  }
+
   private formatInt(value: number): string {
     return Math.round(value).toLocaleString('fr-FR');
   }
 
-  private formatMoney(value: number): string {
+  protected formatMoney(value: number): string {
     return value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  private toTicketSalesRows(tickets: TicketResponse[], concerts: ConcertResponse[]): TicketSalesHistoryRow[] {
+    const concertById = new Map<number, ConcertResponse>(concerts.map((concert) => [concert.id, concert]));
+
+    return tickets
+      .map((ticket) => {
+        const soldCount = ticket.customerIds.length;
+        const concert = ticket.concertId !== null ? concertById.get(ticket.concertId) : undefined;
+
+        return {
+          ticketId: ticket.id,
+          ticketTitle: ticket.title,
+          concertId: ticket.concertId,
+          concertTopic: concert?.topic ?? `Concert #${ticket.concertId ?? 'N/A'}`,
+          concertDate: concert?.date ?? '',
+          ticketPrice: ticket.price,
+          soldCount,
+          revenue: ticket.price * soldCount,
+          statut: ticket.statut
+        };
+      })
+      .sort((a, b) => {
+        if (b.soldCount !== a.soldCount) {
+          return b.soldCount - a.soldCount;
+        }
+
+        return b.ticketId - a.ticketId;
+      });
   }
 
   private showToast(type: 'success' | 'error', message: string): void {
@@ -289,3 +369,4 @@ export class OrganizeDashboardComponent {
     setTimeout(() => this.toast.set(null), 3000);
   }
 }
+

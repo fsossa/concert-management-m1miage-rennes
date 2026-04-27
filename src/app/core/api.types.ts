@@ -62,3 +62,34 @@ export interface OrganizerDashboardResponse {
   upcomingConcerts: ConcertResponse[];
   quickActions: string[];
 }
+
+export interface ConcertTicketSalesSummaryResponse {
+  concertId: number;
+  topic: string;
+  date: string;
+  ticketsSold: number;
+  uniqueCustomers: number;
+  revenue: number;
+}
+
+export interface OrganizerTicketSalesResponse {
+  organizerId: number;
+  totalConcerts: number;
+  totalTicketsSold: number;
+  totalRevenue: number;
+  averageTicketPrice: number;
+  concerts: ConcertTicketSalesSummaryResponse[];
+}
+
+export interface TicketSaleHistoryItemResponse {
+  saleId: number;
+  purchaseDate: string;
+  price: number;
+  customerId: number | null;
+  customerName: string | null;
+  customerEmail: string | null;
+  concertId: number | null;
+  concertTopic: string | null;
+  ticketId: number | null;
+  ticketTitle: string | null;
+}

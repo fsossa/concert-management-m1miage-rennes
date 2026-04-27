@@ -1,15 +1,16 @@
 ﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
+import { ConcertResponse } from '../core/api.types';
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
-import { ConcertResponse } from '../core/api.types';
 
 @Component({
   selector: 'app-organize-events',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, RouterLink],
   templateUrl: './organize-events.html'
 })
 export class OrganizeEventsComponent {
@@ -167,4 +168,3 @@ export class OrganizeEventsComponent {
     setTimeout(() => this.toast.set(null), 3000);
   }
 }
-

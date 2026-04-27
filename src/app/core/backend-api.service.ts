@@ -8,6 +8,8 @@ import {
   ConcertResponse,
   OrganizerDashboardResponse,
   OrganizerDashboardStatsResponse,
+  OrganizerTicketSalesResponse,
+  TicketSaleHistoryItemResponse,
   TicketResponse,
   UserResponse
 } from './api.types';
@@ -141,6 +143,18 @@ export class BackendApiService {
     });
   }
 
+  organizerConcertById(token: string, concertId: number): Observable<ConcertResponse> {
+    return this.http.get<ConcertResponse>(`${this.baseUrl}/organise/concerts/${concertId}`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerCustomersByConcert(token: string, concertId: number): Observable<UserResponse[]> {
+    return this.http.get<UserResponse[]>(`${this.baseUrl}/organise/concerts/${concertId}/customers`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
   organizerCreateConcert(token: string, payload: CreateConcertPayload): Observable<ConcertResponse> {
     return this.http.post<ConcertResponse>(`${this.baseUrl}/organise/concerts`, payload, {
       headers: this.authHeaders(token)
@@ -161,6 +175,12 @@ export class BackendApiService {
 
   organizerTickets(token: string): Observable<TicketResponse[]> {
     return this.http.get<TicketResponse[]>(`${this.baseUrl}/organise/tickets/`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerTicketsByConcert(token: string, concertId: number): Observable<TicketResponse[]> {
+    return this.http.get<TicketResponse[]>(`${this.baseUrl}/organise/tickets/concert/${concertId}`, {
       headers: this.authHeaders(token)
     });
   }
@@ -189,6 +209,12 @@ export class BackendApiService {
     });
   }
 
+  organizerArtistsByConcert(token: string, concertId: number): Observable<ArtistResponse[]> {
+    return this.http.get<ArtistResponse[]>(`${this.baseUrl}/organise/artists/concert/${concertId}`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
   organizerCreateArtistForConcert(token: string, concertId: number, payload: CreateArtistPayload): Observable<ArtistResponse> {
     return this.http.post<ArtistResponse>(`${this.baseUrl}/organise/artists/concert/${concertId}`, payload, {
       headers: this.authHeaders(token)
@@ -210,6 +236,20 @@ export class BackendApiService {
   organizerSalesStats(token: string): Observable<OrganizerDashboardStatsResponse> {
     return this.http.get<OrganizerDashboardStatsResponse>(`${this.baseUrl}/organise/tickets/stats/sales`, {
       headers: this.authHeaders(token)
+    });
+  }
+
+  organizerConcertSalesMe(token: string): Observable<OrganizerTicketSalesResponse> {
+    return this.http.get<OrganizerTicketSalesResponse>(`${this.baseUrl}/organise/concerts/sales/me`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  organizerLatestSalesHistory(token: string, limit = 50): Observable<TicketSaleHistoryItemResponse[]> {
+    const params = new HttpParams().set('limit', limit);
+    return this.http.get<TicketSaleHistoryItemResponse[]>(`${this.baseUrl}/organise/concerts/sales/me/history`, {
+      headers: this.authHeaders(token),
+      params
     });
   }
 
