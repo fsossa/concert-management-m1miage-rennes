@@ -18,15 +18,49 @@
             Retour
           </button>
 
-          @for (item of navItems; track item.path) {
+          <a
+            routerLink="/search"
+            routerLinkActive="ring-2 ring-[#7bc1ce]/70"
+            class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+          >
+            Rechercher
+          </a>
+
+          @if (isConnected()) {
             <a
-              [routerLink]="item.path"
+              routerLink="/profile"
               routerLinkActive="ring-2 ring-[#7bc1ce]/70"
-              [class]="item.variant === 'primary'
-                ? 'rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white'
-                : 'rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]'"
+              class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
             >
-              {{ item.label }}
+              Profil
+            </a>
+          }
+
+          @if (isConnected()) {
+            <button
+              type="button"
+              (click)="logout()"
+              class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Deconnexion
+            </button>
+          } @else {
+            <a
+              routerLink="/auth"
+              routerLinkActive="ring-2 ring-[#7bc1ce]/70"
+              class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white"
+            >
+              Connexion
+            </a>
+          }
+
+          @if (isOrganizer()) {
+            <a
+              routerLink="/organize"
+              routerLinkActive="ring-2 ring-[#7bc1ce]/70"
+              class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+            >
+              Espace Organize
             </a>
           }
         </div>

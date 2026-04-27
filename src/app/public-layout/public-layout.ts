@@ -1,6 +1,8 @@
 import { Location } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, computed, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+import { AuthStoreService } from '../core/auth-store.service';
 
 @Component({
   selector: 'app-public-layout',
@@ -10,15 +12,20 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 })
 export class PublicLayoutComponent {
   private readonly location = inject(Location);
+  private readonly router = inject(Router);
+  private readonly authStore = inject(AuthStoreService);
 
-  protected readonly navItems = [
-    { label: 'Rechercher', path: '/search', variant: 'ghost' },
-    { label: 'Profil', path: '/profile', variant: 'ghost' },
-    { label: 'Connexion', path: '/auth', variant: 'primary' },
-    { label: 'Espace Organize', path: '/organize', variant: 'ghost' }
-  ];
+  protected readonly isConnected = computed(() => !!this.authStore.token());
+  protected readonly isOrganizer = computed(
+    () => this.isConnected() && this.authStore.roles().some((role) => role === 'ORGANIZER' || role === 'ADMIN')
+  );
 
   protected goBack(): void {
     this.location.back();
+  }
+
+  protected logout(): void {
+    this.authStore.clearSession();
+    void this.router.navigateByUrl('/');
   }
 }

@@ -5,16 +5,24 @@
       <h1 class="mt-1 text-3xl font-black text-[#1f2b3a]">Trouver un concert</h1>
     </div>
 
-    <form class="grid gap-3 md:grid-cols-5">
-      <input type="text" placeholder="Topic (electro, jazz...)" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="text" placeholder="Artiste" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="date" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="text" placeholder="Ville / Salle" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <button type="button" class="rounded-xl bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-2 text-sm font-semibold text-white">Rechercher</button>
+    <form class="grid gap-3 md:grid-cols-6" (ngSubmit)="search()">
+      <input type="text" name="topic" [(ngModel)]="topic" placeholder="Topic (electro, jazz...)" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+      <input type="text" name="artistName" [(ngModel)]="artistName" placeholder="Artiste" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+      <input type="date" name="date" [(ngModel)]="date" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+      <input type="text" name="description" [(ngModel)]="description" placeholder="Description" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+      <input type="text" name="organizerName" [(ngModel)]="organizerName" placeholder="Organizer" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
+      <button type="submit" [disabled]="loading()" class="rounded-xl bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-2 text-sm font-semibold text-white">Rechercher</button>
     </form>
 
+    @if (error()) {
+      <p class="mt-4 text-sm font-semibold text-red-500">{{ error() }}</p>
+    }
+
     <div class="mt-7 grid gap-4 md:grid-cols-2">
-      @for (concert of results; track concert.id) {
+      @if (loading()) {
+        <p class="text-sm text-[#5f7483]">Chargement...</p>
+      }
+      @for (concert of results(); track concert.id) {
         <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-4">
           <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#698192]">{{ concert.topic }}</p>
           <h2 class="mt-2 text-xl font-black text-[#213349]">{{ concert.title }}</h2>
