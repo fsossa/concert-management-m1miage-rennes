@@ -48,6 +48,10 @@ export class OrganizeConcertDetailComponent {
     return `${customer.firstName} ${customer.lastName}`.trim();
   }
 
+  protected isTicketAvailable(statut: string, capacity: number): boolean {
+    return statut.toLowerCase() === 'available' && capacity > 0;
+  }
+
   private loadDetails(): void {
     const token = this.authStore.token();
     if (!token) {
@@ -88,4 +92,3 @@ export class OrganizeConcertDetailComponent {
       });
   }
 }
-

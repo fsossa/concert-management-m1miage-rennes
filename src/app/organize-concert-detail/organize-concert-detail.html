@@ -65,6 +65,7 @@
                   <th class="px-2 py-2">Titre</th>
                   <th class="px-2 py-2">Prix</th>
                   <th class="px-2 py-2">Capacite restante</th>
+                  <th class="px-2 py-2">Disponibilite</th>
                   <th class="px-2 py-2">Statut</th>
                   <th class="px-2 py-2">Achats</th>
                 </tr>
@@ -74,7 +75,18 @@
                   <tr class="border-t border-[#edf3f6]">
                     <td class="px-2 py-3 font-semibold text-[#223448]">{{ ticket.title }}</td>
                     <td class="px-2 py-3 text-[#556472]">{{ formatMoney(ticket.price) }} EUR</td>
-                    <td class="px-2 py-3 text-[#556472]">{{ ticket.capacity }}</td>
+                    <td class="px-2 py-3 text-[#556472]">{{ ticket.capacity }} restants</td>
+                    <td class="px-2 py-3">
+                      <span
+                        class="rounded-full px-2.5 py-1 text-xs font-semibold"
+                        [class.bg-[#eaf9ed]]="isTicketAvailable(ticket.statut, ticket.capacity)"
+                        [class.text-[#1e8a63]]="isTicketAvailable(ticket.statut, ticket.capacity)"
+                        [class.bg-red-100]="!isTicketAvailable(ticket.statut, ticket.capacity)"
+                        [class.text-red-700]="!isTicketAvailable(ticket.statut, ticket.capacity)"
+                      >
+                        {{ isTicketAvailable(ticket.statut, ticket.capacity) ? 'Disponible' : 'Indisponible' }}
+                      </span>
+                    </td>
                     <td class="px-2 py-3 text-[#556472]">{{ ticket.statut }}</td>
                     <td class="px-2 py-3 text-[#556472]">{{ ticket.customerIds.length }}</td>
                   </tr>
@@ -115,4 +127,3 @@
     </article>
   }
 </section>
-

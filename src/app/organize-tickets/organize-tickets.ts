@@ -134,6 +134,10 @@ export class OrganizeTicketsComponent {
     return concert?.topic ?? `Concert #${concertId}`;
   }
 
+  protected isTicketAvailable(statut: string, capacity: number): boolean {
+    return statut.toLowerCase() === 'available' && capacity > 0;
+  }
+
   private loadData(): void {
     const token = this.authStore.token();
     if (!token) {

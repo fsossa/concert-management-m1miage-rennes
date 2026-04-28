@@ -71,6 +71,10 @@ interface UpdateArtistPayload {
   name?: string;
 }
 
+interface BuyTicketPayload {
+  ticketId: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BackendApiService {
   private readonly baseUrl = 'http://localhost:8080';
@@ -119,6 +123,14 @@ export class BackendApiService {
     return this.http.get<ConcertResponse>(`${this.baseUrl}/api/${id}`);
   }
 
+  ticketById(id: number): Observable<TicketResponse> {
+    return this.http.get<TicketResponse>(`${this.baseUrl}/api/tickets/${id}`);
+  }
+
+  artistById(id: number): Observable<ArtistResponse> {
+    return this.http.get<ArtistResponse>(`${this.baseUrl}/api/artists/${id}`);
+  }
+
   customerProfile(token: string): Observable<UserResponse> {
     return this.http.get<UserResponse>(`${this.baseUrl}/api/custom/profile`, {
       headers: this.authHeaders(token)
@@ -127,6 +139,12 @@ export class BackendApiService {
 
   customerTickets(token: string): Observable<TicketResponse[]> {
     return this.http.get<TicketResponse[]>(`${this.baseUrl}/api/custom/mytickets`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  buyTicket(token: string, payload: BuyTicketPayload): Observable<TicketResponse> {
+    return this.http.post<TicketResponse>(`${this.baseUrl}/api/custom/buyticket`, payload, {
       headers: this.authHeaders(token)
     });
   }
