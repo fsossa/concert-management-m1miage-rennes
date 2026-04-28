@@ -35,7 +35,8 @@ export class ConcertSearchComponent {
   protected organizerName = '';
 
   constructor() {
-    this.search();
+    //Pour éviter que les résultats soient chargés dès l'affichage de la page, on ne lance pas la recherche automatiquement.
+    //this.search();
   }
 
   protected search(): void {
