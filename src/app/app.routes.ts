@@ -14,6 +14,7 @@ import { OrganizePlaceholderComponent } from './organize-placeholder/organize-pl
 import { OrganizeTicketsComponent } from './organize-tickets/organize-tickets';
 import { PublicLayoutComponent } from './public-layout/public-layout';
 import { authGuard, organizerGuard } from './core/auth.guard';
+import { TicketViewComponent } from './ticket-view/ticket-view';
 
 export const routes: Routes = [
   {
@@ -36,6 +37,10 @@ export const routes: Routes = [
         path: 'profile',
         canActivate: [authGuard],
         component: CustomerProfileComponent
+      },
+      {
+        path: 'ticket-view',
+        component: TicketViewComponent
       }
     ]
   },

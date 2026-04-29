@@ -12,15 +12,7 @@
         </h1>
       </div>
 
-      @if (isConnected()) {
-        <button
-          type="button"
-          (click)="logout()"
-          class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-5 py-2 text-sm font-semibold text-white shadow-sm"
-        >
-          Déconnexion
-        </button>
-      }
+    
     </div>
 
     @if (error()) {
@@ -152,80 +144,78 @@
             </a>
           </div>
         } @else {
-          <div class="mt-5 grid gap-4 sm:grid-cols-2">
-            @for (purchase of purchases(); track purchase.purchaseId) {
-              <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-5 shadow-sm">
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          @for (purchase of purchases(); track purchase.purchaseId) {
+            <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-4 shadow-sm">
+              <div class="flex items-start justify-between gap-2">
+                <div>
+                  <h3 class="text-base font-black text-[#2e495d]">
+                    {{ purchase.ticketTitle }}
+                  </h3>
 
-                <div class="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 class="text-lg font-black text-[#2e495d]">
-                      {{ purchase.ticketTitle }}
-                    </h3>
-
-                    <p class="mt-1 text-sm text-[#6b8190]">
-                      Concert : {{ purchase.concertTopic || 'Concert non lié' }}
-                    </p>
-                  </div>
-
-                  <span class="rounded-full bg-[#eaf9ed] px-3 py-1 text-xs font-bold text-[#1e8a63]">
-                    {{ statusLabel(purchase.status) }}
-                  </span>
-                </div>
-
-                <div class="mt-5 space-y-2">
-                  <p class="text-sm text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Date du concert :</span>
-                    {{ formatDate(purchase.concertDate) }}
-                  </p>
-
-                  <p class="text-sm text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Date d'achat :</span>
-                    {{ formatDate(purchase.purchaseDate) }}
-                  </p>
-
-                  <p class="text-sm text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Quantité :</span>
-                    {{ purchase.quantity }} billet(s)
-                  </p>
-
-                  <p class="text-sm text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Prix unitaire :</span>
-                    {{ purchase.unitPrice }} EUR
-                  </p>
-
-                  <p class="text-sm text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Total payé :</span>
-                    {{ purchase.totalPrice }} EUR
-                  </p>
-
-                  <p class="break-all text-xs text-[#6b8190]">
-                    <span class="font-semibold text-[#2e495d]">Référence :</span>
-                    {{ purchase.reference }}
+                  <p class="mt-1 text-sm text-[#6b8190]">
+                    Concert : {{ purchase.concertTopic || 'Concert non lié' }}
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  (click)="downloadTicket(purchase)"
-                  class="mt-5 w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-bold text-white shadow-sm"
-                >
-                  Télécharger mon ticket PDF
-                </button>
+                <span class="rounded-full bg-[#eaf9ed] px-2 py-1 text-[11px] font-bold text-[#1e8a63]">
+                  {{ statusLabel(purchase.status) }}
+                </span>
+              </div>
 
-              </article>
-            }
+              <div class="mt-4 space-y-1.5">
+                <p class="text-xs text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Date du concert :</span>
+                  {{ formatDate(purchase.concertDate) }}
+                </p>
+
+                <p class="text-xs text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Date d'achat :</span>
+                  {{ formatDate(purchase.purchaseDate) }}
+                </p>
+
+                <p class="text-xs text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Quantité :</span>
+                  {{ purchase.quantity }} billet(s)
+                </p>
+
+                <p class="text-xs text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Prix unitaire :</span>
+                  {{ purchase.unitPrice }} EUR
+                </p>
+
+                <p class="text-xs text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Total payé :</span>
+                  {{ purchase.totalPrice }} EUR
+                </p>
+
+                <p class="break-all text-[11px] text-[#6b8190]">
+                  <span class="font-semibold text-[#2e495d]">Référence :</span>
+                  {{ purchase.reference }}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                (click)="downloadTicket(purchase)"
+                class="mt-4 w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-2 text-xs font-bold text-white shadow-sm"
+              >
+                Télécharger mon ticket PDF
+              </button>
+            </article>
+          }
+      </div>
+          }
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              routerLink="/"
+              class="inline-block rounded-full border border-[#cfe2ea] bg-white px-5 py-2 text-sm font-semibold text-[#24606d]"
+            >
+              Retour accueil
+            </a>
           </div>
         }
-
-        <div class="mt-8 flex flex-wrap gap-3">
-          <a
-            routerLink="/"
-            class="inline-block rounded-full border border-[#cfe2ea] bg-white px-5 py-2 text-sm font-semibold text-[#24606d]"
-          >
-            Retour accueil
-          </a>
-        </div>
-      }
 
     } @else {
       <div class="mt-6 rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-6">
@@ -258,3 +248,68 @@
 
   </div>
 </section>
+<div class="fixed -left-[10000px] top-0">
+  <div #pdfTicket class="ticket-pdf">
+    <div class="ticket-wrapper">
+      <!-- Partie gauche : informations -->
+      <div class="ticket-content">
+        <div class="ticket-brand">CONCERT TICKETS</div>
+
+        <div class="ticket-title">
+          {{ selectedPurchase()?.concertTopic || 'Nom de l’événement' }}
+        </div>
+
+        <div class="ticket-date">
+          {{ formatDateForTicket(selectedPurchase()?.concertDate) }}
+        </div>
+
+        <div class="ticket-customer">
+          {{ fullCustomerName() }}
+        </div>
+
+        <div class="ticket-type">
+          {{ selectedPurchase()?.ticketTitle || 'Ticket standard' }}
+        </div>
+
+        <div class="ticket-category">Catégorie standard</div>
+        <div class="ticket-subcategory">
+          Quantité : {{ selectedPurchase()?.quantity || 1 }} billet(s)
+        </div>
+
+        <div class="ticket-price-line">
+          <span class="ticket-price">
+            {{ formatPrice(selectedPurchase()?.totalPrice) }}
+          </span>
+          <span class="ticket-price-note">(prix total payé)</span>
+        </div>
+
+        <div class="ticket-details">
+          <p><strong>Concert :</strong> {{ selectedPurchase()?.concertTopic || 'Concert non renseigné' }}</p>
+          <p><strong>Date du concert :</strong> {{ formatDateForTicket(selectedPurchase()?.concertDate) }}</p>
+          <p><strong>Date de commande :</strong> {{ formatDateForTicket(selectedPurchase()?.purchaseDate) }}</p>
+          <p><strong>N° de billet :</strong> {{ selectedPurchase()?.reference || 'Non disponible' }}</p>
+          <p><strong>Client :</strong> {{ fullCustomerName() }}</p>
+          <p><strong>Tarif :</strong> {{ selectedPurchase()?.ticketTitle || 'Standard' }}</p>
+          <p><strong>Prix unitaire :</strong> {{ formatPrice(selectedPurchase()?.unitPrice) }}</p>
+          <p><strong>Total payé :</strong> {{ formatPrice(selectedPurchase()?.totalPrice) }}</p>
+          <p><strong>Organisateur :</strong> Concert Tickets</p>
+        </div>
+      </div>
+
+      <!-- Partie droite : QR code -->
+      <div class="ticket-side">
+        @if (ticketQrCode()) {
+          <img
+            [src]="ticketQrCode()"
+            alt="QR Code"
+            class="ticket-qr-image"
+          />
+        }
+
+        <div class="ticket-reference-vertical">
+          {{ selectedPurchase()?.reference || 'Non disponible' }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
