@@ -11,6 +11,7 @@ import {
   OrganizerTicketSalesResponse,
   TicketSaleHistoryItemResponse,
   TicketResponse,
+  CustomerTicketPurchaseResponse,
   UserResponse
 } from './api.types';
 
@@ -73,6 +74,8 @@ interface UpdateArtistPayload {
 
 interface BuyTicketPayload {
   ticketId: number;
+  quantity: number;
+
 }
 
 @Injectable({ providedIn: 'root' })
@@ -136,6 +139,11 @@ export class BackendApiService {
       headers: this.authHeaders(token)
     });
   }
+  customerPurchases(token: string): Observable<CustomerTicketPurchaseResponse[]> {
+    return this.http.get<CustomerTicketPurchaseResponse[]>(`${this.baseUrl}/api/custom/my-purchases`, {
+      headers: this.authHeaders(token)
+    });
+  }
 
   customerTickets(token: string): Observable<TicketResponse[]> {
     return this.http.get<TicketResponse[]>(`${this.baseUrl}/api/custom/mytickets`, {
@@ -143,8 +151,8 @@ export class BackendApiService {
     });
   }
 
-  buyTicket(token: string, payload: BuyTicketPayload): Observable<TicketResponse> {
-    return this.http.post<TicketResponse>(`${this.baseUrl}/api/custom/buyticket`, payload, {
+  buyTicket(token: string, payload: BuyTicketPayload): Observable<CustomerTicketPurchaseResponse> {
+    return this.http.post<CustomerTicketPurchaseResponse>(`${this.baseUrl}/api/custom/buyticket`, payload, {
       headers: this.authHeaders(token)
     });
   }

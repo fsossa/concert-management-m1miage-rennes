@@ -30,6 +30,25 @@ export interface TicketResponse {
   customerIds: number[];
 }
 
+export interface CustomerTicketPurchaseResponse {
+  purchaseId: number;
+  reference: string;
+  purchaseDate: string;
+
+  ticketId: number;
+  ticketTitle: string;
+
+  concertId: number | null;
+  concertTopic: string | null;
+  concertDate: string | null;
+
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+
+  status: string;
+}
+
 export interface UserResponse {
   id: number;
   lastName: string;
