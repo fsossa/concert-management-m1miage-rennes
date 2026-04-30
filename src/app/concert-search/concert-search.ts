@@ -10,6 +10,7 @@ interface SearchConcertItem {
   id: number;
   title: string;
   topic: string;
+  description: string;
   artist: string;
   date: string;
 }
@@ -33,10 +34,11 @@ export class ConcertSearchComponent {
   protected description = '';
   protected artistName = '';
   protected organizerName = '';
+  protected priceMin = '';
+  protected priceMax = '';
 
   constructor() {
-    //Pour éviter que les résultats soient chargés dès l'affichage de la page, on ne lance pas la recherche automatiquement.
-    //this.search();
+    // On ne lance pas la recherche automatiquement.
   }
 
   protected search(): void {
@@ -44,23 +46,51 @@ export class ConcertSearchComponent {
     this.error.set(null);
 
     this.api.searchConcerts({
-      topic: this.topic.trim() || undefined,
-      date: this.date || undefined,
-      description: this.description.trim() || undefined,
-      artistName: this.artistName.trim() || undefined,
-      organizerName: this.organizerName.trim() || undefined
+      topic: this.topic,
+      date: this.date,
+      description: this.description,
+      artistName: this.artistName,
+      organizerName: this.organizerName,
+      priceMin: this.toNumberOrUndefined(this.priceMin),
+      priceMax: this.toNumberOrUndefined(this.priceMax)
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (concerts) => {
-          this.results.set(concerts.map((c) => this.toItem(c)));
+          this.results.set(concerts.map((concert) => this.toItem(concert)));
           this.loading.set(false);
         },
         error: () => {
-          this.error.set('Recherche indisponible pour le moment.');
+          this.error.set('Erreur lors de la recherche.');
           this.loading.set(false);
         }
       });
+  }
+
+  protected resetFilters(): void {
+    this.topic = '';
+    this.date = '';
+    this.description = '';
+    this.artistName = '';
+    this.organizerName = '';
+    this.priceMin = '';
+    this.priceMax = '';
+    this.results.set([]);
+    this.error.set(null);
+  }
+
+  private toNumberOrUndefined(value: string): number | undefined {
+    if (!value || value.trim() === '') {
+      return undefined;
+    }
+
+    const numberValue = Number(value);
+
+    if (Number.isNaN(numberValue)) {
+      return undefined;
+    }
+
+    return numberValue;
   }
 
   private toItem(concert: ConcertResponse): SearchConcertItem {
@@ -68,7 +98,10 @@ export class ConcertSearchComponent {
       id: concert.id,
       title: concert.topic || 'Concert',
       topic: concert.topic || 'N/A',
-      artist: concert.artistIds.length > 0 ? `Artistes: ${concert.artistIds.join(', ')}` : 'Sans artiste associe',
+      description: concert.description || 'Aucune description',
+      artist: concert.artistIds.length > 0
+        ? `Artistes : ${concert.artistIds.join(', ')}`
+        : 'Sans artiste associé',
       date: this.formatDate(concert.date)
     };
   }
@@ -78,4 +111,3 @@ export class ConcertSearchComponent {
     return Number.isNaN(date.getTime()) ? raw : date.toLocaleString('fr-FR');
   }
 }
-

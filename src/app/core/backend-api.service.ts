@@ -35,6 +35,8 @@ interface SearchPayload {
   description?: string;
   artistName?: string;
   organizerName?: string;
+  priceMin?: number;
+  priceMax?: number;
 }
 
 interface CreateConcertPayload {
@@ -117,6 +119,12 @@ export class BackendApiService {
     }
     if (payload.organizerName) {
       params = params.set('organizerName', payload.organizerName);
+    }
+    if (payload.priceMin !== undefined && payload.priceMin !== null) {
+      params = params.set('priceMin', payload.priceMin.toString());
+    }
+    if (payload.priceMax !== undefined && payload.priceMax !== null) {
+      params = params.set('priceMax', payload.priceMax.toString());
     }
 
     return this.http.get<ConcertResponse[]>(`${this.baseUrl}/api/search`, { params });
