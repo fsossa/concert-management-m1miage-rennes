@@ -1,12 +1,13 @@
-﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
+﻿import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { finalize, forkJoin, map, of, switchMap } from 'rxjs';
+import { Observable, catchError, finalize, forkJoin, map, of, switchMap } from 'rxjs';
 
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
 import { ConcertResponse, TicketResponse, TicketSaleHistoryItemResponse } from '../core/api.types';
+import { NotificationService } from '../core/notification.service';
 
 interface DashboardKpi {
   label: string;
@@ -53,6 +54,8 @@ export class OrganizeDashboardComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationService = inject(NotificationService);
+  private lastTicketRefreshVersion = 0;
 
   protected readonly loading = signal(true);
   protected readonly creating = signal(false);
@@ -95,6 +98,16 @@ export class OrganizeDashboardComponent {
       });
 
     this.loadDashboard();
+
+    effect(() => {
+      const version = this.notificationService.ticketRefreshVersion();
+      if (version === 0 || version === this.lastTicketRefreshVersion) {
+        return;
+      }
+
+      this.lastTicketRefreshVersion = version;
+      this.loadDashboard(false);
+    });
   }
 
   protected openCreateModal(): void {
@@ -227,7 +240,7 @@ export class OrganizeDashboardComponent {
       });
   }
 
-  private loadDashboard(): void {
+  private loadDashboard(showLoading = true): void {
     const token = this.authStore.token();
     if (!token) {
       this.error.set('Session organizer requise.');
@@ -235,11 +248,15 @@ export class OrganizeDashboardComponent {
       return;
     }
 
-    this.loading.set(true);
+    if (showLoading) {
+      this.loading.set(true);
+    }
 
     forkJoin({
       dashboard: this.api.organizerDashboard(token),
-      tickets: this.api.organizerTickets(token),
+      tickets: this.api.organizerTickets(token).pipe(
+        switchMap((tickets) => this.hydrateTicketsFromDetailEndpoint(tickets))
+      ),
       concerts: this.api.organizerConcerts(token),
       latestSales: this.api.organizerLatestSalesHistory(token, 50)
     })
@@ -266,6 +283,18 @@ export class OrganizeDashboardComponent {
           this.loading.set(false);
         }
       });
+  }
+
+  private hydrateTicketsFromDetailEndpoint(tickets: TicketResponse[]): Observable<TicketResponse[]> {
+    if (tickets.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(
+      tickets.map((ticket) =>
+        this.api.ticketById(ticket.id).pipe(catchError(() => of(ticket)))
+      )
+    );
   }
 
   private toConcertRow(concert: ConcertResponse): DashboardConcertRow {
@@ -369,4 +398,3 @@ export class OrganizeDashboardComponent {
     setTimeout(() => this.toast.set(null), 3000);
   }
 }
-

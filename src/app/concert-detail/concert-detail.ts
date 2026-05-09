@@ -159,30 +159,14 @@ export class ConcertDetailComponent {
       )
       .subscribe({
         next: ({ purchase, refreshedTicket }) => {
+          const purchasedQuantity = purchase.quantity || quantity;
+
+          this.decreaseTicketCapacity(ticket.id, purchasedQuantity);
+
           if (refreshedTicket) {
-            this.tickets.update((current) =>
-              current.map((item) =>
-                item.id === refreshedTicket.id ? this.toTicketItem(refreshedTicket) : item
-              )
-            );
+            this.applyRefreshedTicket(refreshedTicket);
           } else {
-            // Si on ne peut pas rafraîchir, on diminue quand même l'affichage localement.
-            this.tickets.update((current) =>
-              current.map((item) => {
-                if (item.id !== ticket.id) {
-                  return item;
-                }
-
-                const newCapacity = Math.max(item.capacity - quantity, 0);
-
-                return {
-                  ...item,
-                  capacity: newCapacity,
-                  soldOut: newCapacity <= 0,
-                  available: newCapacity > 0
-                };
-              })
-            );
+            this.clampTicketQuantity(ticket.id);
           }
 
           // Après achat, on remet la quantité à 1 pour ce ticket.
@@ -321,6 +305,61 @@ export class ConcertDetailComponent {
     });
 
     this.quantitiesByTicketId.set(quantities);
+  }
+
+  private decreaseTicketCapacity(ticketId: number, quantity: number): void {
+    this.tickets.update((current) =>
+      current.map((item) => {
+        if (item.id !== ticketId) {
+          return item;
+        }
+
+        const newCapacity = Math.max(item.capacity - quantity, 0);
+
+        return {
+          ...item,
+          capacity: newCapacity,
+          soldOut: newCapacity <= 0,
+          available: item.available && newCapacity > 0
+        };
+      })
+    );
+
+    this.clampTicketQuantity(ticketId);
+  }
+
+  private applyRefreshedTicket(refreshedTicket: TicketResponse): void {
+    this.tickets.update((current) =>
+      current.map((item) => {
+        if (item.id !== refreshedTicket.id) {
+          return item;
+        }
+
+        const refreshedItem = this.toTicketItem(refreshedTicket);
+        const capacity = Math.min(refreshedItem.capacity, item.capacity);
+
+        return {
+          ...refreshedItem,
+          capacity,
+          soldOut: capacity <= 0 || refreshedItem.soldOut,
+          available: refreshedItem.available && capacity > 0
+        };
+      })
+    );
+
+    this.clampTicketQuantity(refreshedTicket.id);
+  }
+
+  private clampTicketQuantity(ticketId: number): void {
+    const ticket = this.tickets().find((item) => item.id === ticketId);
+    if (!ticket) {
+      return;
+    }
+
+    this.quantitiesByTicketId.update((current) => ({
+      ...current,
+      [ticketId]: ticket.capacity > 0 ? Math.min(current[ticketId] ?? 1, ticket.capacity) : 1
+    }));
   }
 
   private toTicketItem(ticket: TicketResponse): TicketItem {

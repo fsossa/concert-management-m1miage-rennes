@@ -1,11 +1,12 @@
-﻿import { Component, DestroyRef, inject, signal } from '@angular/core';
+﻿import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { forkJoin } from 'rxjs';
+import { Observable, catchError, forkJoin, of, switchMap } from 'rxjs';
 
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
 import { ConcertResponse, TicketResponse } from '../core/api.types';
+import { NotificationService } from '../core/notification.service';
 
 @Component({
   selector: 'app-organize-tickets',
@@ -17,6 +18,8 @@ export class OrganizeTicketsComponent {
   private readonly api = inject(BackendApiService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly authStore = inject(AuthStoreService);
+  private readonly notificationService = inject(NotificationService);
+  private lastTicketRefreshVersion = 0;
 
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
@@ -34,6 +37,16 @@ export class OrganizeTicketsComponent {
 
   constructor() {
     this.loadData();
+
+    effect(() => {
+      const version = this.notificationService.ticketRefreshVersion();
+      if (version === 0 || version === this.lastTicketRefreshVersion) {
+        return;
+      }
+
+      this.lastTicketRefreshVersion = version;
+      this.loadData(false);
+    });
   }
 
   protected saveTicket(): void {
@@ -138,7 +151,7 @@ export class OrganizeTicketsComponent {
     return statut.toLowerCase() === 'available' && capacity > 0;
   }
 
-  private loadData(): void {
+  private loadData(showLoading = true): void {
     const token = this.authStore.token();
     if (!token) {
       this.error.set('Session organizer requise.');
@@ -146,12 +159,16 @@ export class OrganizeTicketsComponent {
       return;
     }
 
-    this.loading.set(true);
+    if (showLoading) {
+      this.loading.set(true);
+    }
     this.error.set(null);
 
     forkJoin({
       concerts: this.api.organizerConcerts(token),
-      tickets: this.api.organizerTickets(token)
+      tickets: this.api.organizerTickets(token).pipe(
+        switchMap((tickets) => this.hydrateTicketsFromDetailEndpoint(tickets))
+      )
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -165,6 +182,18 @@ export class OrganizeTicketsComponent {
           this.loading.set(false);
         }
       });
+  }
+
+  private hydrateTicketsFromDetailEndpoint(tickets: TicketResponse[]): Observable<TicketResponse[]> {
+    if (tickets.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(
+      tickets.map((ticket) =>
+        this.api.ticketById(ticket.id).pipe(catchError(() => of(ticket)))
+      )
+    );
   }
 
   private resetForm(): void {
@@ -181,4 +210,3 @@ export class OrganizeTicketsComponent {
     setTimeout(() => this.toast.set(null), 3000);
   }
 }
-

@@ -1,11 +1,12 @@
-import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { Observable, catchError, forkJoin, of, switchMap } from 'rxjs';
 
 import { ArtistResponse, ConcertResponse, TicketResponse, UserResponse } from '../core/api.types';
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
+import { NotificationService } from '../core/notification.service';
 
 @Component({
   selector: 'app-organize-concert-detail',
@@ -18,6 +19,8 @@ export class OrganizeConcertDetailComponent {
   private readonly authStore = inject(AuthStoreService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly notificationService = inject(NotificationService);
+  private lastTicketRefreshVersion = 0;
 
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
@@ -33,6 +36,16 @@ export class OrganizeConcertDetailComponent {
 
   constructor() {
     this.loadDetails();
+
+    effect(() => {
+      const version = this.notificationService.ticketRefreshVersion();
+      if (version === 0 || version === this.lastTicketRefreshVersion) {
+        return;
+      }
+
+      this.lastTicketRefreshVersion = version;
+      this.loadDetails(false);
+    });
   }
 
   protected formatDate(raw: string): string {
@@ -52,7 +65,7 @@ export class OrganizeConcertDetailComponent {
     return statut.toLowerCase() === 'available' && capacity > 0;
   }
 
-  private loadDetails(): void {
+  private loadDetails(showLoading = true): void {
     const token = this.authStore.token();
     if (!token) {
       this.error.set('Session organizer requise.');
@@ -67,13 +80,17 @@ export class OrganizeConcertDetailComponent {
       return;
     }
 
-    this.loading.set(true);
+    if (showLoading) {
+      this.loading.set(true);
+    }
     this.error.set(null);
 
     forkJoin({
       concert: this.api.organizerConcertById(token, concertId),
       artists: this.api.organizerArtistsByConcert(token, concertId),
-      tickets: this.api.organizerTicketsByConcert(token, concertId),
+      tickets: this.api.organizerTicketsByConcert(token, concertId).pipe(
+        switchMap((tickets) => this.hydrateTicketsFromDetailEndpoint(tickets))
+      ),
       customers: this.api.organizerCustomersByConcert(token, concertId)
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -90,5 +107,17 @@ export class OrganizeConcertDetailComponent {
           this.loading.set(false);
         }
       });
+  }
+
+  private hydrateTicketsFromDetailEndpoint(tickets: TicketResponse[]): Observable<TicketResponse[]> {
+    if (tickets.length === 0) {
+      return of([]);
+    }
+
+    return forkJoin(
+      tickets.map((ticket) =>
+        this.api.ticketById(ticket.id).pipe(catchError(() => of(ticket)))
+      )
+    );
   }
 }
