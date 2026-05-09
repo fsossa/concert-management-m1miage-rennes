@@ -21,10 +21,7 @@ export class OrganizeLayoutComponent implements OnDestroy {
   protected readonly notificationsOpen = signal(false);
   protected readonly notificationUserId = signal<number | null>(null);
   protected readonly unreadNotificationsCount = computed(() =>
-    Math.max(
-      this.notificationService.unreadCount(),
-      this.notificationService.notifications().filter((notification) => !notification.read).length
-    )
+    this.notificationService.notifications().filter((notification) => !notification.read).length
   );
 
   protected readonly navItems = [
