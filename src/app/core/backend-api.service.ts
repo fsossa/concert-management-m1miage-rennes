@@ -9,6 +9,7 @@ import {
   OrganizerDashboardResponse,
   OrganizerDashboardStatsResponse,
   OrganizerTicketSalesResponse,
+  NotificationPreferencesResponse,
   TicketSaleHistoryItemResponse,
   TicketResponse,
   CustomerTicketPurchaseResponse,
@@ -161,6 +162,21 @@ export class BackendApiService {
 
   buyTicket(token: string, payload: BuyTicketPayload): Observable<CustomerTicketPurchaseResponse> {
     return this.http.post<CustomerTicketPurchaseResponse>(`${this.baseUrl}/api/custom/buyticket`, payload, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  customerNotificationPreferences(token: string): Observable<NotificationPreferencesResponse> {
+    return this.http.get<NotificationPreferencesResponse>(`${this.baseUrl}/api/custom/notification-preferences`, {
+      headers: this.authHeaders(token)
+    });
+  }
+
+  updateCustomerNotificationPreferences(
+    token: string,
+    payload: NotificationPreferencesResponse
+  ): Observable<NotificationPreferencesResponse> {
+    return this.http.put<NotificationPreferencesResponse>(`${this.baseUrl}/api/custom/notification-preferences`, payload, {
       headers: this.authHeaders(token)
     });
   }

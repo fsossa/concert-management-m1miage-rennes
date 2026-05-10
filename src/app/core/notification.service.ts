@@ -165,8 +165,33 @@ export class NotificationService {
 
     return {
       ...notification,
+      organizerId: this.extractOrganizerId(notification),
       read: this.toBoolean(readValue)
     };
+  }
+
+  private extractOrganizerId(notification: NotificationResponse): number | null {
+    return this.toNullableNumber(
+      notification.organizerId
+      ?? notification.organizerID
+      ?? notification.organizer_id
+      ?? notification.organizerid
+      ?? notification.concertOrganizerId
+      ?? notification.organizer?.id
+    );
+  }
+
+  private toNullableNumber(value: number | string | null | undefined): number | null {
+    if (value === null || value === undefined || value === '') {
+      return null;
+    }
+
+    if (typeof value === 'number') {
+      return Number.isNaN(value) ? null : value;
+    }
+
+    const parsed = Number(value);
+    return Number.isNaN(parsed) ? null : parsed;
   }
 
   private toBoolean(value: boolean | string | number): boolean {

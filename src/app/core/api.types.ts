@@ -49,6 +49,11 @@ export interface CustomerTicketPurchaseResponse {
   status: string;
 }
 
+export interface NotificationPreferencesResponse {
+  notifyAllOrganizers: boolean;
+  organizerIds: number[];
+}
+
 export interface UserResponse {
   id: number;
   lastName: string;

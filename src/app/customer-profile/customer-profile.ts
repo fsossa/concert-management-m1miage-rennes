@@ -4,12 +4,18 @@ import { forkJoin, catchError, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { jsPDF } from 'jspdf';
 
-import { CustomerTicketPurchaseResponse, UserResponse } from '../core/api.types';
+import { ConcertResponse, CustomerTicketPurchaseResponse, UserResponse } from '../core/api.types';
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
+import { NotificationPreferenceMode, NotificationPreferencesService } from '../core/notification-preferences.service';
 import { ElementRef, ViewChild } from '@angular/core';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
+
+interface OrganizerOption {
+  id: number;
+  label: string;
+}
 
 @Component({
   selector: 'app-customer-profile',
@@ -23,11 +29,13 @@ export class CustomerProfileComponent {
   private readonly authStore = inject(AuthStoreService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(BackendApiService);
+  protected readonly notificationPreferences = inject(NotificationPreferencesService);
 
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly user = signal<UserResponse | null>(null);
   protected readonly purchases = signal<CustomerTicketPurchaseResponse[]>([]);
+  protected readonly organizers = signal<OrganizerOption[]>([]);
 
   protected readonly isConnected = computed(() => !!this.authStore.token());
 
@@ -49,6 +57,10 @@ export class CustomerProfileComponent {
 
     return upcomingPurchases[0]?.concertTopic ?? 'Aucun concert à venir';
   });
+
+  protected readonly selectedOrganizersCount = computed(() =>
+    this.notificationPreferences.preferences().organizerIds.length
+  );
 
   constructor() {
     this.loadProfile();
@@ -88,6 +100,18 @@ export class CustomerProfileComponent {
     }
 
     return status;
+  }
+
+  protected setNotificationMode(mode: NotificationPreferenceMode): void {
+    this.notificationPreferences.setMode(mode);
+  }
+
+  protected toggleOrganizerPreference(organizerId: number): void {
+    this.notificationPreferences.toggleOrganizer(organizerId);
+  }
+
+  protected isOrganizerSelected(organizerId: number): boolean {
+    return this.notificationPreferences.preferences().organizerIds.includes(organizerId);
   }
 
 protected async downloadTicket(purchase: CustomerTicketPurchaseResponse): Promise<void> {
@@ -230,13 +254,18 @@ protected formatPrice(value: number | null | undefined): string {
 
         return of([]);
       })
-    )
+    ),
+
+    incomingConcerts: this.api.incomingConcerts().pipe(catchError(() => of([]))),
+    latestConcerts: this.api.latestConcerts().pipe(catchError(() => of([])))
   })
     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
-      next: ({ user, purchases }) => {
+      next: ({ user, purchases, incomingConcerts, latestConcerts }) => {
         this.user.set(user);
         this.purchases.set(purchases);
+        this.notificationPreferences.load();
+        this.organizers.set(this.toOrganizerOptions([...incomingConcerts, ...latestConcerts]));
         this.loading.set(false);
       },
 
@@ -249,4 +278,21 @@ protected formatPrice(value: number | null | undefined): string {
       }
     });
 }
+
+  private toOrganizerOptions(concerts: ConcertResponse[]): OrganizerOption[] {
+    const organizerIds = new Set<number>();
+
+    concerts.forEach((concert) => {
+      if (typeof concert.organizerId === 'number') {
+        organizerIds.add(concert.organizerId);
+      }
+    });
+
+    return [...organizerIds]
+      .sort((a, b) => a - b)
+      .map((id) => ({
+        id,
+        label: `Organisateur #${id}`
+      }));
+  }
 }
