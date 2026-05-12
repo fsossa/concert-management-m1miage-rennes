@@ -13,17 +13,27 @@
           <button
             type="button"
             (click)="goBack()"
-            class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+            title="Retour"
+            aria-label="Retour"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-[#cfe2ea] bg-white text-[#24606d] transition hover:bg-[#f2fbfd]"
           >
-            Retour
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M19 12H5"></path>
+              <path d="M12 19l-7-7 7-7"></path>
+            </svg>
           </button>
 
           <a
             routerLink="/search"
             routerLinkActive="ring-2 ring-[#7bc1ce]/70"
-            class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+            title="Rechercher"
+            aria-label="Rechercher"
+            class="flex h-10 w-10 items-center justify-center rounded-full border border-[#cfe2ea] bg-white text-[#24606d] transition hover:bg-[#f2fbfd]"
           >
-            Rechercher
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"></circle>
+              <path d="M20 20l-3.5-3.5"></path>
+            </svg>
           </a>
 
           @if (isConnected()) {
@@ -114,9 +124,14 @@
             <a
               routerLink="/profile"
               routerLinkActive="ring-2 ring-[#7bc1ce]/70"
-              class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+              title="Profil"
+              aria-label="Profil"
+              class="flex h-10 w-10 items-center justify-center rounded-full border border-[#cfe2ea] bg-white text-[#24606d] transition hover:bg-[#f2fbfd]"
             >
-              Profil
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="8" r="4"></circle>
+                <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5"></path>
+              </svg>
             </a>
           }
 
@@ -124,9 +139,15 @@
             <button
               type="button"
               (click)="logout()"
-              class="rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-semibold text-white"
+              title="Deconnexion"
+              aria-label="Deconnexion"
+              class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] text-white"
             >
-              Deconnexion
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <path d="M16 17l5-5-5-5"></path>
+                <path d="M21 12H9"></path>
+              </svg>
             </button>
           } @else {
             <a
@@ -142,9 +163,15 @@
             <a
               routerLink="/organize"
               routerLinkActive="ring-2 ring-[#7bc1ce]/70"
-              class="rounded-full border border-[#cfe2ea] bg-white px-4 py-2 text-sm font-semibold text-[#24606d]"
+              title="Espace Organize"
+              aria-label="Espace Organize"
+              class="flex h-10 w-10 items-center justify-center rounded-full border border-[#cfe2ea] bg-white text-[#24606d] transition hover:bg-[#f2fbfd]"
             >
-              Espace Organize
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="14" rx="2"></rect>
+                <path d="M8 21h8"></path>
+                <path d="M12 18v3"></path>
+              </svg>
             </a>
           }
         </div>
