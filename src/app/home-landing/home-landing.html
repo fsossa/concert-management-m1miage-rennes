@@ -1,5 +1,9 @@
 <section>
   <div class="mx-auto max-w-7xl">
+    @if (error()) {
+      <p class="mb-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">{{ error() }}</p>
+    }
+
     <section class="rounded-3xl border border-[#e2d5ff] bg-white p-5 shadow-[0_14px_35px_rgba(143,97,201,0.14)] sm:p-6">
       <div class="mb-4 flex items-center justify-between">
         <h2 class="text-2xl font-black text-[#1f2b3a]">Prochains concerts a venir</h2>
@@ -7,12 +11,15 @@
       </div>
 
       <div class="flex gap-4 overflow-x-auto pb-2">
-        @for (concert of incomingConcerts; track concert.id) {
+        @if (loading() && incomingConcerts().length === 0) {
+          <p class="text-sm text-[#5d7281]">Chargement...</p>
+        }
+        @for (concert of incomingConcerts(); track concert.id) {
           <article class="min-w-[250px] rounded-2xl border border-[#d6e7ee] bg-[#f8fcff] p-4">
             <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#68808f]">A venir</p>
             <h3 class="mt-2 text-lg font-black text-[#223247]">{{ concert.title }}</h3>
             <p class="mt-2 text-sm text-[#5d7281]">{{ concert.date }}</p>
-            <p class="text-sm text-[#5d7281]">{{ concert.venue }}</p>
+            <p class="text-sm text-[#5d7281]">Topic: {{ concert.topic }}</p>
             <p class="mt-3 text-sm font-semibold text-[#188069]">{{ concert.price }}</p>
             <a [routerLink]="['/concert', concert.id]" class="mt-4 inline-block rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-1.5 text-xs font-semibold text-white">Details</a>
           </article>
@@ -27,12 +34,12 @@
       </div>
 
       <div class="flex gap-4 overflow-x-auto pb-2">
-        @for (concert of latestConcerts; track concert.id) {
+        @for (concert of latestConcerts(); track concert.id) {
           <article class="min-w-[250px] rounded-2xl border border-[#d6e7ee] bg-[#f8fcff] p-4">
             <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#68808f]">Nouveau</p>
             <h3 class="mt-2 text-lg font-black text-[#223247]">{{ concert.title }}</h3>
             <p class="mt-2 text-sm text-[#5d7281]">{{ concert.date }}</p>
-            <p class="text-sm text-[#5d7281]">{{ concert.venue }}</p>
+            <p class="text-sm text-[#5d7281]">Topic: {{ concert.topic }}</p>
             <p class="mt-3 text-sm font-semibold text-[#188069]">{{ concert.price }}</p>
             <a [routerLink]="['/concert', concert.id]" class="mt-4 inline-block rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-1.5 text-xs font-semibold text-white">Details</a>
           </article>

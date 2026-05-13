@@ -38,17 +38,38 @@
               <p class="mt-2 text-xl text-[#4e545f]">Sign into your account</p>
             </div>
 
-            <form class="space-y-4" autocomplete="on">
+            <div class="mb-5 rounded-2xl border border-[#d4e8f0] bg-[#f7fcff] p-4 text-sm text-[#24566a]">
+              <p class="mb-2 text-xs font-black uppercase tracking-[0.12em] text-[#5f7483]">Comptes de test</p>
+              <div class="space-y-2">
+                <div>
+                  <p class="font-semibold">Organizer</p>
+                  <p><span class="font-semibold">Email:</span> organizer0@test.xyz</p>
+                  <p><span class="font-semibold">Mot de passe:</span> password0</p>
+                </div>
+                <div class="h-px bg-[#d8ebf3]"></div>
+                <div>
+                  <p class="font-semibold">Customer</p>
+                  <p><span class="font-semibold">Email:</span> customer0@test.xyz</p>
+                  <p><span class="font-semibold">Mot de passe:</span> password0</p>
+                </div>
+              </div>
+            </div>
+
+            <form class="space-y-4" autocomplete="on" (ngSubmit)="login()">
               <input
                 id="loginEmail"
                 type="email"
                 placeholder="Email"
+                name="loginEmail"
+                [(ngModel)]="loginEmail"
                 class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
               />
               <input
                 id="loginPassword"
                 type="password"
                 placeholder="Password"
+                name="loginPassword"
+                [(ngModel)]="loginPassword"
                 class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
               />
               <div class="flex items-center justify-between px-1 text-xs text-[#6b7280]">
@@ -59,18 +80,15 @@
                 <a href="#" class="font-medium text-[#6c7780] hover:text-[#006a7b]">Forgot password?</a>
               </div>
               <button
-                type="button"
-                (click)="login()"
+                type="submit"
+                [disabled]="loading()"
                 class="w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-6 py-3 text-2xl font-semibold text-white shadow-md transition hover:brightness-105"
               >
                 Login
               </button>
-              <a
-                routerLink="/organize"
-                class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
-              >
-                Acceder a l'espace de gestion
-              </a>
+              @if (loginError()) {
+                <p class="text-center text-sm font-semibold text-red-500">{{ loginError() }}</p>
+              }
             </form>
           } @else {
             <div class="mb-6 text-center sm:text-left">
@@ -78,7 +96,7 @@
               <p class="mt-2 text-xl text-[#4e545f]">Join the concert platform</p>
             </div>
 
-            <form class="space-y-4" autocomplete="on">
+            <form class="space-y-4" autocomplete="on" (ngSubmit)="register()">
               <div>
                 <p class="mb-2 text-sm font-semibold text-[#2d6c75]">Profil</p>
                 <div class="flex rounded-full border border-[#d8ebf3] bg-[#f7fcff] p-1 text-sm font-semibold text-[#165f69]">
@@ -110,35 +128,54 @@
               </div>
 
               <input
-                id="registerName"
+                id="registerFirstName"
                 type="text"
-                placeholder="Full Name"
+                placeholder="First Name"
+                name="registerFirstName"
+                [(ngModel)]="registerFirstName"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <input
+                id="registerLastName"
+                type="text"
+                placeholder="Last Name"
+                name="registerLastName"
+                [(ngModel)]="registerLastName"
+                class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
+              />
+              <input
+                id="registerBirthDate"
+                type="date"
+                name="registerBirthDate"
+                [(ngModel)]="registerBirthDate"
                 class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
               />
               <input
                 id="registerEmail"
                 type="email"
                 placeholder="Email"
+                name="registerEmail"
+                [(ngModel)]="registerEmail"
                 class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
               />
               <input
                 id="registerPassword"
                 type="password"
                 placeholder="Password"
+                name="registerPassword"
+                [(ngModel)]="registerPassword"
                 class="w-full rounded-full border border-[#d4e8f0] bg-white px-5 py-3 text-[#1f2937] outline-none placeholder:text-[#95a7b1] focus:border-[#69b3c1]"
               />
               <button
                 type="submit"
+                [disabled]="loading()"
                 class="w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-6 py-3 text-2xl font-semibold text-white shadow-md transition hover:brightness-105"
               >
                 Register
               </button>
-              <a
-                routerLink="/organize"
-                class="block text-center text-sm font-semibold text-[#2d6c75] underline-offset-4 transition hover:text-[#0d5f6e] hover:underline"
-              >
-                Voir l'espace de gestion
-              </a>
+              @if (registerError()) {
+                <p class="text-center text-sm font-semibold text-red-500">{{ registerError() }}</p>
+              }
             </form>
           }
         </div>

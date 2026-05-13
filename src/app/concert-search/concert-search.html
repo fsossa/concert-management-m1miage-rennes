@@ -1,27 +1,130 @@
 <section class="min-h-screen bg-[#f3e9ff] p-4 sm:p-6 lg:p-8">
-  <div class="mx-auto max-w-7xl rounded-3xl border border-[#e2d5ff] bg-white p-6 shadow-[0_14px_40px_rgba(143,97,201,0.18)]">
-    <div class="mb-6">
-      <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#657585]">Recherche</p>
-      <h1 class="mt-1 text-3xl font-black text-[#1f2b3a]">Trouver un concert</h1>
-    </div>
+  <div class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[320px_1fr]">
 
-    <form class="grid gap-3 md:grid-cols-5">
-      <input type="text" placeholder="Topic (electro, jazz...)" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="text" placeholder="Artiste" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="date" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <input type="text" placeholder="Ville / Salle" class="rounded-xl border border-[#d5e8ef] px-3 py-2 text-sm outline-none focus:border-[#68b3c1]" />
-      <button type="button" class="rounded-xl bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-3 py-2 text-sm font-semibold text-white">Rechercher</button>
-    </form>
+    <!-- Filtres à gauche -->
+    <aside class="rounded-3xl border border-[#e2d5ff] bg-white p-6 shadow-[0_14px_40px_rgba(143,97,201,0.18)]">
+      <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#657585]">
+        Recherche
+      </p>
 
-    <div class="mt-7 grid gap-4 md:grid-cols-2">
-      @for (concert of results; track concert.id) {
-        <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-4">
-          <p class="text-xs font-semibold uppercase tracking-[0.12em] text-[#698192]">{{ concert.topic }}</p>
-          <h2 class="mt-2 text-xl font-black text-[#213349]">{{ concert.title }}</h2>
-          <p class="mt-1 text-sm text-[#5f7483]">{{ concert.artist }} - {{ concert.date }}</p>
-          <a [routerLink]="['/concert', concert.id]" class="mt-3 inline-block rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-1.5 text-sm font-semibold text-white">Voir detail</a>
-        </article>
-      }
-    </div>
+      <h1 class="mt-1 text-2xl font-black text-[#1f2b3a]">
+        Filtres
+      </h1>
+
+      <div class="mt-6 space-y-4">
+       <input
+          type="text"
+          placeholder="Topic"
+          [(ngModel)]="topic"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+        <input
+          type="text"
+          placeholder="Artiste"
+          [(ngModel)]="artistName"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+        <input
+          type="date"
+          [(ngModel)]="date"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+        <input
+          type="text"
+          placeholder="Description"
+          [(ngModel)]="description"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+        <input
+          type="text"
+          placeholder="Organisateur"
+          [(ngModel)]="organizerName"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+        <div class="grid grid-cols-2 gap-3">
+          <input
+          type="number"
+          min="0"
+          placeholder="Prix min"
+          [(ngModel)]="priceMin"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+
+          <input
+          type="number"
+          min="0"
+          placeholder="Prix max"
+          [(ngModel)]="priceMax"
+          class="w-full rounded-2xl border border-[#cfe2ea] px-4 py-3 text-sm outline-none"
+        />
+        </div>
+
+        <button
+          type="button"
+          (click)="search()"
+          class="w-full rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-5 py-3 text-sm font-bold text-white"
+        >
+          Rechercher
+        </button>
+
+        <button
+          type="button"
+          (click)="resetFilters()"
+          class="w-full rounded-full border border-[#cfe2ea] bg-white px-5 py-3 text-sm font-bold text-[#24606d]"
+        >
+          Réinitialiser
+        </button>
+      </div>
+    </aside>
+
+    <!-- Résultats à droite -->
+    <main class="rounded-3xl border border-[#e2d5ff] bg-white p-6 shadow-[0_14px_40px_rgba(143,97,201,0.18)]">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[#657585]">
+            Résultats
+          </p>
+
+          <h2 class="mt-1 text-2xl font-black text-[#1f2b3a]">
+            Concerts trouvés
+          </h2>
+        </div>
+
+        <span class="rounded-full bg-[#eef7fb] px-4 py-2 text-sm font-bold text-[#24606d]">
+          {{ results().length }} résultat(s)
+        </span>
+      </div>
+
+      <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        @for (concert of results(); track concert.id) {
+          <article class="rounded-2xl border border-[#d5e8ef] bg-[#f8fcff] p-5">
+            <h3 class="text-lg font-black text-[#2e495d]">
+              {{ concert.topic }}
+            </h3>
+
+            <p class="mt-2 text-sm text-[#6b8190]">
+              {{ concert.description }}
+            </p>
+
+            <p class="mt-2 text-sm font-semibold text-[#2e495d]">
+              Date : {{ concert.date }}
+            </p>
+
+            <a
+              [routerLink]="['/concert', concert.id]"
+              class="mt-4 inline-block rounded-full bg-gradient-to-b from-[#006a7b] to-[#58bf45] px-4 py-2 text-sm font-bold text-white"
+            >
+              Voir détail
+            </a>
+          </article>
+        }
+      </div>
+    </main>
+
   </div>
 </section>
