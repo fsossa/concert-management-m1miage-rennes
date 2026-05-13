@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { ArtistResponse, ConcertResponse, TicketResponse } from '../core/api.types';
 import { AuthStoreService } from '../core/auth-store.service';
 import { BackendApiService } from '../core/backend-api.service';
+import { NotificationPreferencesService } from '../core/notification-preferences.service';
 
 interface TicketItem {
   id: number;
@@ -29,6 +30,7 @@ export class ConcertDetailComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly api = inject(BackendApiService);
   private readonly authStore = inject(AuthStoreService);
+  protected readonly notificationPreferences = inject(NotificationPreferencesService);
 
   protected readonly loading = signal(true);
   protected readonly buyingTicketId = signal<number | null>(null);
@@ -50,6 +52,45 @@ export class ConcertDetailComponent {
     const roles = this.authStore.roles();
 
     return !!token && roles.includes('CUSTOMER');
+  }
+
+  protected organizerLabel(): string {
+    const organizerId = this.concert()?.organizerId;
+    return organizerId === null || organizerId === undefined ? 'Organisateur inconnu' : `Organisateur #${organizerId}`;
+  }
+
+  protected organizerFollowed(): boolean {
+    const organizerId = this.concert()?.organizerId;
+    if (organizerId === null || organizerId === undefined) {
+      return false;
+    }
+
+    const preferences = this.notificationPreferences.preferences();
+    return !preferences.notifyAllOrganizers && preferences.organizerIds.includes(organizerId);
+  }
+
+  protected canFollowOrganizer(): boolean {
+    return this.canBuyTicket() && this.concert()?.organizerId !== null;
+  }
+
+  protected toggleOrganizerFollow(checked: boolean): void {
+    const organizerId = this.concert()?.organizerId;
+    if (organizerId === null || organizerId === undefined || !this.canBuyTicket()) {
+      return;
+    }
+
+    if (this.notificationPreferences.preferences().notifyAllOrganizers) {
+      this.notificationPreferences.setMode('SELECTED');
+    }
+
+    const isSelected = this.notificationPreferences.preferences().organizerIds.includes(organizerId);
+
+    if (checked && !isSelected) {
+      this.notificationPreferences.toggleOrganizer(organizerId);
+    }
+    if (!checked && isSelected) {
+      this.notificationPreferences.toggleOrganizer(organizerId);
+    }
   }
 
   protected ticketQuantity(ticketId: number): number {
@@ -295,6 +336,10 @@ export class ConcertDetailComponent {
           this.loading.set(false);
         }
       });
+
+    if (this.canBuyTicket()) {
+      this.notificationPreferences.load();
+    }
   }
 
   private initQuantities(tickets: TicketResponse[]): void {

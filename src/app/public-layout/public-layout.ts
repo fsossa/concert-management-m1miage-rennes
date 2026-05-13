@@ -39,6 +39,9 @@ export class PublicLayoutComponent implements OnDestroy {
       return normalizedRole === 'ORGANIZER' || normalizedRole === 'ADMIN';
     })
   );
+  protected readonly isCustomer = computed(
+    () => this.isConnected() && this.authStore.roles().some((role) => this.normalizeRole(role) === 'CUSTOMER')
+  );
   constructor() {
     this.initNotifications();
   }

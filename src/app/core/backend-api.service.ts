@@ -103,6 +103,10 @@ export class BackendApiService {
     return this.http.get<ConcertResponse[]>(`${this.baseUrl}/api/latestConcerts`);
   }
 
+  nextConcert(): Observable<ConcertResponse> {
+    return this.http.get<ConcertResponse>(`${this.baseUrl}/api/next-concert`);
+  }
+
   searchConcerts(payload: SearchPayload): Observable<ConcertResponse[]> {
     let params = new HttpParams();
 

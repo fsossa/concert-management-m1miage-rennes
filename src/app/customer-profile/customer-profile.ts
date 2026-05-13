@@ -36,6 +36,7 @@ export class CustomerProfileComponent {
   protected readonly user = signal<UserResponse | null>(null);
   protected readonly purchases = signal<CustomerTicketPurchaseResponse[]>([]);
   protected readonly organizers = signal<OrganizerOption[]>([]);
+  protected readonly nextConcert = signal<ConcertResponse | null>(null);
 
   protected readonly isConnected = computed(() => !!this.authStore.token());
 
@@ -48,6 +49,10 @@ export class CustomerProfileComponent {
   );
 
   protected readonly nextConcertLabel = computed(() => {
+    if (this.nextConcert()) {
+      return this.nextConcert()!.topic || 'Prochain concert';
+    }
+
     const upcomingPurchases = this.purchases()
       .filter((purchase) => !!purchase.concertDate)
       .filter((purchase) => new Date(purchase.concertDate as string).getTime() >= Date.now())
@@ -55,7 +60,7 @@ export class CustomerProfileComponent {
         new Date(a.concertDate as string).getTime() - new Date(b.concertDate as string).getTime()
       );
 
-    return upcomingPurchases[0]?.concertTopic ?? 'Aucun concert à venir';
+    return this.nextConcert() ?? 'Aucun concert à venir';
   });
 
   protected readonly selectedOrganizersCount = computed(() =>
@@ -243,27 +248,29 @@ protected formatPrice(value: number | null | undefined): string {
   this.loading.set(true);
   this.error.set(null);
 
-  forkJoin({
-    user: this.api.customerProfile(token),
+    forkJoin({
+      user: this.api.customerProfile(token),
 
-    purchases: this.api.customerPurchases(token).pipe(
-      catchError(() => {
+      purchases: this.api.customerPurchases(token).pipe(
+        catchError(() => {
         this.error.set(
           'Profil chargé, mais impossible de charger les achats. Vérifie que la route /api/custom/my-purchases existe côté backend.'
         );
 
         return of([]);
       })
-    ),
+      ),
 
-    incomingConcerts: this.api.incomingConcerts().pipe(catchError(() => of([]))),
-    latestConcerts: this.api.latestConcerts().pipe(catchError(() => of([])))
-  })
-    .pipe(takeUntilDestroyed(this.destroyRef))
-    .subscribe({
-      next: ({ user, purchases, incomingConcerts, latestConcerts }) => {
+      nextConcert: this.api.nextConcert().pipe(catchError(() => of(null))),
+      incomingConcerts: this.api.incomingConcerts().pipe(catchError(() => of([]))),
+      latestConcerts: this.api.latestConcerts().pipe(catchError(() => of([])))
+    })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+      next: ({ user, purchases, nextConcert, incomingConcerts, latestConcerts }) => {
         this.user.set(user);
         this.purchases.set(purchases);
+        this.nextConcert.set(nextConcert);
         this.notificationPreferences.load();
         this.organizers.set(this.toOrganizerOptions([...incomingConcerts, ...latestConcerts]));
         this.loading.set(false);
