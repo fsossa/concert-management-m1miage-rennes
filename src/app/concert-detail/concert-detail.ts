@@ -54,6 +54,20 @@ export class ConcertDetailComponent {
     return !!token && roles.includes('CUSTOMER');
   }
 
+  protected isConcertPassed(): boolean {
+    const concertDate = this.concert()?.date;
+    if (!concertDate) {
+      return false;
+    }
+
+    const date = new Date(concertDate);
+    if (Number.isNaN(date.getTime())) {
+      return false;
+    }
+
+    return date.getTime() < Date.now();
+  }
+
   protected organizerLabel(): string {
     const organizerId = this.concert()?.organizerId;
     return organizerId === null || organizerId === undefined ? 'Organisateur inconnu' : `Organisateur #${organizerId}`;
@@ -117,6 +131,15 @@ export class ConcertDetailComponent {
 
   protected async buyTicket(ticket: TicketItem): Promise<void> {
     if (!this.canBuyTicket()) {
+      return;
+    }
+
+    if (this.isConcertPassed()) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Concert terminé',
+        text: "Ce concert est déjà passé. L'achat de ticket n'est plus possible."
+      });
       return;
     }
 

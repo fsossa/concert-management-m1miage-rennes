@@ -94,7 +94,7 @@ export class PublicLayoutComponent implements OnDestroy {
     this.authStore.clearSession();
     this.notificationPreferences.reset();
     this.notificationService.reset();
-    void this.router.navigateByUrl('/');
+    void this.router.navigateByUrl('/auth');
   }
 
   private initNotifications(): void {
